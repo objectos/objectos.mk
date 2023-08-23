@@ -99,7 +99,7 @@ OSSRH_RELEASE_CURLX += --url https://oss.sonatype.org/service/local/staging/bulk
 ossrh: $(OSSRH_UPLOAD_JSON)
 	@for i in 1 2 3; do \
 	  echo "Waiting before release..."; \
-	  sleep 1; \
+	  sleep 15; \
 	  echo "Trying to release $(OSSRH_REPOSITORY_ID)"; \
 	  $(OSSRH_RELEASE_CURLX); \
 	  if [ $$? -eq 0 ]; then \
