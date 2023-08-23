@@ -36,9 +36,18 @@ CLASS_OUTPUT := $(WORK)/classes
 ## main compiled classes
 CLASSES := $(SOURCES:$(SOURCE_PATH)/%.java=$(CLASS_OUTPUT)/%.class)
 
+## main compile-time dependencies
+# COMPILE_DEPS = 
+
+## main compile-time module-path
+COMPILE_MODULE_PATH = $(call module-path,$(COMPILE_DEPS))
+ 
 ## main javac command
 JAVACX = $(JAVAC)
 JAVACX += -d $(CLASS_OUTPUT)
+ifneq ($(COMPILE_MODULE_PATH),)
+JAVACX += --module-path $(COMPILE_MODULE_PATH)
+endif
 JAVACX += --module-version $(VERSION)
 JAVACX += $(MODIFIED_SOURCES)
 
