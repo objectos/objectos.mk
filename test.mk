@@ -68,20 +68,12 @@ TEST_JAVAX += --module $(MODULE)/$(TESTING_MAIN)
 #
 # test target
 #
-.PHONY: test test-compile test-compile-deps test-classes test-runtime-deps
-test: test-compile test-runtime-deps 
-	$(TEST_JAVAX)
-
-test-compile: compile test-compile-deps test-classes
+.PHONY: test
+test: $(ARTIFACT) $(TEST_COMPILE_DEPS) $(TEST_CLASSES) $(TEST_RUNTIME_DEPS) 
 	if [ -n "$(TEST_MODIFIED_SOURCES)" ]; then \
 		$(TEST_JAVACX); \
 	fi
-
-test-compile-deps: $(TEST_COMPILE_DEPS)
-
-test-classes: $(TEST_CLASSES)
+	$(TEST_JAVAX)
 
 $(TEST_CLASSES): $(TEST_CLASS_OUTPUT)/%.class: $(TEST_SOURCE_PATH)/%.java
 	$(eval TEST_MODIFIED_SOURCES += $$<)
-
-test-runtime-deps: $(TEST_RUNTIME_DEPS)
