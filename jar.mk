@@ -68,7 +68,7 @@ JARX += .
 .PHONY: jar
 jar: $(ARTIFACT)
 
-$(ARTIFACT): $(CLASSES)
+$(ARTIFACT): $(COMPILE_DEPS) $(CLASSES)
 	if [ -n "$(MODIFIED_SOURCES)" ]; then \
 		$(JAVACX); \
 	fi
