@@ -54,7 +54,7 @@ OSSRH_JARX += $(OSSRH_SIGS:$(WORK)/%=-C $(WORK) %)
 OSSRH_COOKIES := $(WORK)/ossrh-cookies.txt 
 
 ## ossrh login curl command
-OSSRH_LOGIN_CURLX = $(CURL)
+OSSRH_LOGIN_CURLX := $(CURL)
 OSSRH_LOGIN_CURLX += --cookie-jar $(OSSRH_COOKIES)
 OSSRH_LOGIN_CURLX += --output /dev/null
 OSSRH_LOGIN_CURLX += --request GET
@@ -62,33 +62,57 @@ OSSRH_LOGIN_CURLX += --silent
 OSSRH_LOGIN_CURLX += --url https://oss.sonatype.org/service/local/authentication/login
 OSSRH_LOGIN_CURLX += --user $(OSSRH_USERNAME):$(OSSRH_PASSWORD)
 
+## ossrh response json
+OSSRH_UPLOAD_JSON := $(WORK)/ossrh-upload.json
+
 ## ossrh upload curl command
-OSSRH_UPLOAD_CURLX = $(CURL)
+OSSRH_UPLOAD_CURLX := $(CURL)
 OSSRH_UPLOAD_CURLX += --cookie $(OSSRH_COOKIES)
 OSSRH_UPLOAD_CURLX += --header 'Content-Type: multipart/form-data'
 OSSRH_UPLOAD_CURLX += --form file=@$(OSSRH_ARTIFACT)
+OSSRH_UPLOAD_CURLX += --output $(OSSRH_UPLOAD_JSON)
 OSSRH_UPLOAD_CURLX += --request POST
 OSSRH_UPLOAD_CURLX += --url https://oss.sonatype.org/service/local/staging/bundle_upload
+
+## ossrh repository id sed parsing
+OSSRH_SEDX := $(SED)
+OSSRH_SEDX += --regexp-extended
+OSSRH_SEDX += --silent
+OSSRH_SEDX += 's/^.*repositories\/(.*)".*/\1/p'
+OSSRH_SEDX += $(OSSRH_UPLOAD_JSON)
+
+## repository id
+OSSRH_REPOSITORY_ID = $(shell $(OSSRH_SEDX))
+
+## ossrh release curl command
+OSSRH_RELEASE_CURLX := $(CURL)
+OSSRH_RELEASE_CURLX += --cookie $(OSSRH_COOKIES)
+OSSRH_RELEASE_CURLX += --data '{"data":{"autoDropAfterRelease":true,"description": "","stagedRepositoryIds":["$(OSSRH_REPOSITORY_ID)"]}'
+OSSRH_RELEASE_CURLX += --header 'Content-Type: application/json'
+OSSRH_RELEASE_CURLX += --request POST
+OSSRH_RELEASE_CURLX += --url https://oss.sonatype.org/service/local/staging/bulk/promote
 
 #
 # ossrh target
 #
+.PHONY: ossrh
+ossrh: $(OSSRH_UPLOAD_JSON)
+	@for i in 1 2 3; do \
+	  echo "Waiting before release..."; \
+	  sleep 1; \
+	  echo "Trying to release $(OSSRH_REPOSITORY_ID)"; \
+	  $(OSSRH_RELEASE_CURLX); \
+	  if [ $$? -eq 0 ]; then \
+	    exit 0; \
+	  fi \
+	done
 
-.PHONY: ossrh-stage 
-ossrh-stage: ossrh-bundle ossrh-login ossrh-upload
-
-.PHONY: ossrh-bundle
-ossrh-bundle: $(OSSRH_ARTIFACT)
-	$(OSSRH_JARX)
-
-.PHONY: ossrh-login
-ossrh-login:
+$(OSSRH_UPLOAD_JSON): $(OSSRH_ARTIFACT)
 	@$(OSSRH_LOGIN_CURLX)
-
-ossrh-upload:
 	$(OSSRH_UPLOAD_CURLX)
-	
+ 
 $(OSSRH_ARTIFACT): $(OSSRH_SIGS)
+	$(OSSRH_JARX)
 
 %.asc: %
 	@$(GPGX) $<

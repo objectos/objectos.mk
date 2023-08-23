@@ -56,21 +56,14 @@ JARX += .
 #
 # jar target
 #
-.PHONY: jar compile classes
+.PHONY: jar
 jar: $(ARTIFACT)
 
-$(ARTIFACT): compile
-	$(JARX)
-
-#
-# compile target
-#
-compile: classes
+$(ARTIFACT): $(CLASSES)
 	if [ -n "$(MODIFIED_SOURCES)" ]; then \
 		$(JAVACX); \
 	fi
-	
-classes: $(CLASSES)
+	$(JARX)
 
 $(CLASSES): $(CLASS_OUTPUT)/%.class: $(SOURCE_PATH)/%.java
 	$(eval MODIFIED_SOURCES += $$<)

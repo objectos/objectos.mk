@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+# Delete the default suffixes
+.SUFFIXES:
+
 #
 # Tool options
 #
