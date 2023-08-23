@@ -39,14 +39,6 @@ JAR := $(JAVA_HOME_BIN)/jar
 
 ## javadoc common options
 JAVADOC := $(JAVA_HOME_BIN)/javadoc
-JAVADOC += -bottom 'Copyright &\#169; 2022&\#x2013;2023 <a href="https://www.objectos.com.br/">Objectos Software LTDA</a>. All rights reserved.'
-JAVADOC += -charset 'UTF-8'
-JAVADOC += -docencoding 'UTF-8'
-JAVADOC += -doctitle '$(GROUP_ID):$(ARTIFACT_ID) $(VERSION) API'
-JAVADOC += -protected
-JAVADOC += -use
-JAVADOC += -version
-JAVADOC += -windowtitle '$(GROUP_ID):$(ARTIFACT_ID) $(VERSION) API'
 
 ## curl common options
 CURL := curl
