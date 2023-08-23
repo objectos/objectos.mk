@@ -20,14 +20,18 @@
 # - generates a pom.xml suitable for deploying to a maven repository 
 #
 
-## ossrh pom source
+## pom source
 POM_SOURCE := pom-template.xml
 
-## ossrh pom file
+## pom file
 POM_ARTIFACT := $(WORK)/pom.xml
+
+## pom external variables
+# POM_VARIABLES = 
 
 ## ossrh pom sed command
 POM_SEDX := $(SED)
+POM_SEDX += $(foreach var,$(POM_VARIABLES),--expression=s/%%$(var)%%/$($(bar))/g)
 POM_SEDX += --expression=s/%%ARTIFACT_ID%%/$(ARTIFACT_ID)/g
 POM_SEDX += --expression=s/%%GROUP_ID%%/$(GROUP_ID)/g
 POM_SEDX += --expression=s/%%VERSION%%/$(VERSION)/g
