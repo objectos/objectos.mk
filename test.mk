@@ -37,7 +37,7 @@ TEST_CLASS_OUTPUT := $(WORK)/test-classes
 TEST_CLASSES := $(TEST_SOURCES:$(TEST_SOURCE_PATH)/%.java=$(TEST_CLASS_OUTPUT)/%.class)
 
 ## test compile-time dependencies
-TEST_COMPILE_DEPS := $(call dependency,org.testng,testng,7.7.1)
+# TEST_COMPILE_DEPS =
 
 ## test compile-time class path
 TEST_COMPILE_CLASS_PATH := $(call class-path,$(TEST_COMPILE_DEPS)) 
@@ -49,10 +49,7 @@ TEST_JAVACX += --class-path $(CLASS_OUTPUT)$(CLASS_PATH_SEPARATOR)$(TEST_COMPILE
 TEST_JAVACX += $(TEST_MODIFIED_SOURCES)
 
 ## test runtime dependencies
-TEST_RUNTIME_DEPS := $(TEST_COMPILE_DEPS)
-TEST_RUNTIME_DEPS += $(call dependency,com.beust,jcommander,1.82)
-TEST_RUNTIME_DEPS += $(call dependency,org.slf4j,slf4j-api,1.7.36)
-TEST_RUNTIME_DEPS += $(call dependency,org.slf4j,slf4j-nop,1.7.36)
+# TEST_RUNTIME_DEPS =
 
 ## test runtime module-path
 TEST_RUNTIME_MODULE_PATH := $(call module-path,$(TEST_RUNTIME_DEPS))
