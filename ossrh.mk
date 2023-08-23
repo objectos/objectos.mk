@@ -87,7 +87,7 @@ OSSRH_REPOSITORY_ID = $(shell $(OSSRH_SEDX))
 ## ossrh release curl command
 OSSRH_RELEASE_CURLX = $(CURL)
 OSSRH_RELEASE_CURLX += --cookie $(OSSRH_COOKIES)
-OSSRH_RELEASE_CURLX += --data '{"data":{"autoDropAfterRelease":true,"description": "","stagedRepositoryIds":["$(OSSRH_REPOSITORY_ID)"]}'
+OSSRH_RELEASE_CURLX += --data '{"data":{"autoDropAfterRelease":true,"description":"","stagedRepositoryIds":["$(OSSRH_REPOSITORY_ID)"]}}'
 OSSRH_RELEASE_CURLX += --header 'Content-Type: application/json'
 OSSRH_RELEASE_CURLX += --request POST
 OSSRH_RELEASE_CURLX += --url https://oss.sonatype.org/service/local/staging/bulk/promote
