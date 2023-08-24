@@ -34,10 +34,10 @@ POM_ARTIFACT := $(WORK)/pom.xml
 
 ## ossrh pom sed command
 POM_SEDX := $(SED)
-POM_SEDX += $(foreach var,$(POM_VARIABLES),--expression=s/%%$(var)%%/$($(var))/g)
-POM_SEDX += --expression=s/%%ARTIFACT_ID%%/$(ARTIFACT_ID)/g
-POM_SEDX += --expression=s/%%GROUP_ID%%/$(GROUP_ID)/g
-POM_SEDX += --expression=s/%%VERSION%%/$(VERSION)/g
+POM_SEDX += $(foreach var,$(POM_VARIABLES),--expression='s/%%$(var)%%/$($(var))/g')
+POM_SEDX += --expression='s/%%ARTIFACT_ID%%/$(ARTIFACT_ID)/g'
+POM_SEDX += --expression='s/%%GROUP_ID%%/$(GROUP_ID)/g'
+POM_SEDX += --expression='s/%%VERSION%%/$(VERSION)/g'
 POM_SEDX += --expression='w $(POM_ARTIFACT)'
 POM_SEDX += $(POM_SOURCE)
 
