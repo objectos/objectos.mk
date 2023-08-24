@@ -20,9 +20,16 @@
 
 WORK := $(MODULE)/work
 
+ifdef SELFGEN_MODULE
+SELFGEN_WORK := $(SELFGEN_MODULE)/work
+endif
+
 #
 # clean target
 #
 .PHONY: clean
 clean:
 	rm -rf $(WORK)/*
+ifdef SELFGEN_MODULE
+	rm -rf $(SELFGEN_WORK)/*
+endif
