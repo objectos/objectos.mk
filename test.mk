@@ -62,6 +62,9 @@ TEST_JAVAX = $(JAVA)
 TEST_JAVAX += --module-path $(CLASS_OUTPUT)$(MODULE_PATH_SEPARATOR)$(TEST_RUNTIME_MODULE_PATH)
 TEST_JAVAX += --add-modules org.testng
 TEST_JAVAX += --add-reads $(MODULE)=org.testng
+ifdef TEST_JAVAX_EXPORTS
+TEST_JAVAX += $(foreach pkg,$(TEST_JAVAX_EXPORTS),--add-exports $(MODULE)/$(pkg)=org.testng)
+endif
 TEST_JAVAX += --patch-module $(MODULE)=$(TEST_CLASS_OUTPUT)
 TEST_JAVAX += --module $(MODULE)/$(TESTING_MAIN)
 TEST_JAVAX += $(TEST_RUNTIME_OUTPUT)
