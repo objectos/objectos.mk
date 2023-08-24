@@ -15,13 +15,16 @@
 #
 
 #
-# Provides the pom target
+# Provides the pom target:
 #
-# - generates a pom.xml suitable for deploying to a maven repository 
+# - generates a pom.xml suitable for deploying to a maven repository
+# 
+# Requirements:
 #
+# - you must provide the pom template $(MODULE)/pom.xml.tmpl
 
 ## pom source
-POM_SOURCE := pom-template.xml
+POM_SOURCE := $(MODULE)/pom.xml.tmpl
 
 ## pom file
 POM_ARTIFACT := $(WORK)/pom.xml

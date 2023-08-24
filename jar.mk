@@ -19,7 +19,7 @@
 #
 
 ## main base dir
-MAIN := main
+MAIN := $(MODULE)/main
 
 ## main source path
 SOURCE_PATH := $(MAIN)
@@ -31,7 +31,7 @@ SOURCES := $(shell find ${SOURCE_PATH} -type f -name '*.java' -print)
 MODIFIED_SOURCES :=
 
 ## main class output path
-CLASS_OUTPUT := $(WORK)/classes
+CLASS_OUTPUT := $(WORK)/main
 
 ## main compiled classes
 CLASSES := $(SOURCES:$(SOURCE_PATH)/%.java=$(CLASS_OUTPUT)/%.class)
@@ -43,6 +43,7 @@ CLASSES := $(SOURCES:$(SOURCE_PATH)/%.java=$(CLASS_OUTPUT)/%.class)
 COMPILE_MODULE_PATH = $(call module-path,$(COMPILE_DEPS))
  
 ## main javac command
+## - do no set the module-path for artifacts that have no compile-time deps
 JAVACX = $(JAVAC)
 JAVACX += -d $(CLASS_OUTPUT)
 ifneq ($(COMPILE_MODULE_PATH),)

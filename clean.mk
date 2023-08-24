@@ -18,7 +18,7 @@
 # work base dir
 #
 
-WORK := work
+WORK := $(MODULE)/work
 
 #
 # clean target

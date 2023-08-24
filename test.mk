@@ -19,7 +19,7 @@
 #
 
 ## test base dir
-TEST := test
+TEST := $(MODULE)/test
 
 ## test source path
 TEST_SOURCE_PATH := $(TEST)
@@ -31,7 +31,7 @@ TEST_SOURCES := $(shell find ${TEST_SOURCE_PATH} -type f -name '*.java' -print)
 TEST_MODIFIED_SOURCES :=
 
 ## test class output path
-TEST_CLASS_OUTPUT := $(WORK)/test-classes
+TEST_CLASS_OUTPUT := $(WORK)/test
 
 ## test compiled classes
 TEST_CLASSES := $(TEST_SOURCES:$(TEST_SOURCE_PATH)/%.java=$(TEST_CLASS_OUTPUT)/%.class)
@@ -54,6 +54,9 @@ TEST_JAVACX += $(TEST_MODIFIED_SOURCES)
 ## test runtime module-path
 TEST_RUNTIME_MODULE_PATH := $(call module-path,$(TEST_RUNTIME_DEPS))
 
+## test runtime output path
+TEST_RUNTIME_OUTPUT := $(WORK)/test-output
+
 ## test java command
 TEST_JAVAX = $(JAVA)
 TEST_JAVAX += --module-path $(CLASS_OUTPUT)$(MODULE_PATH_SEPARATOR)$(TEST_RUNTIME_MODULE_PATH)
@@ -61,6 +64,7 @@ TEST_JAVAX += --add-modules org.testng
 TEST_JAVAX += --add-reads $(MODULE)=org.testng
 TEST_JAVAX += --patch-module $(MODULE)=$(TEST_CLASS_OUTPUT)
 TEST_JAVAX += --module $(MODULE)/$(TESTING_MAIN)
+TEST_JAVAX += $(TEST_RUNTIME_OUTPUT)
 
 #
 # test target
