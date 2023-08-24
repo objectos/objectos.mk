@@ -22,7 +22,9 @@ JAVADOC_MARKER := $(JAVADOC_OUTPUT)/index.html
 
 ## javadoc command
 JAVADOCX = $(JAVADOC)
+ifneq ($(COMPILE_MODULE_PATH),)
 JAVADOCX += --module-path $(COMPILE_MODULE_PATH)
+endif
 JAVADOCX += -d $(JAVADOC_OUTPUT)
 JAVADOCX += -bottom 'Copyright &\#169; 2022&\#x2013;2023 <a href="https://www.objectos.com.br/">Objectos Software LTDA</a>. All rights reserved.'
 JAVADOCX += -charset 'UTF-8'
