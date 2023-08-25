@@ -45,7 +45,11 @@ TEST_COMPILE_CLASS_PATH := $(call class-path,$(TEST_COMPILE_DEPS))
 ## test javac command
 TEST_JAVACX = $(JAVAC)
 TEST_JAVACX += -d $(TEST_CLASS_OUTPUT)
+TEST_JAVACX += -Xlint:all
 TEST_JAVACX += --class-path $(CLASS_OUTPUT)$(CLASS_PATH_SEPARATOR)$(TEST_COMPILE_CLASS_PATH)
+ifdef ENABLE_PREVIEW
+TEST_JAVACX += --enable-preview
+endif
 TEST_JAVACX += $(TEST_MODIFIED_SOURCES)
 
 ## test runtime dependencies
@@ -64,6 +68,9 @@ TEST_JAVAX += --add-modules org.testng
 TEST_JAVAX += --add-reads $(MODULE)=org.testng
 ifdef TEST_JAVAX_EXPORTS
 TEST_JAVAX += $(foreach pkg,$(TEST_JAVAX_EXPORTS),--add-exports $(MODULE)/$(pkg)=org.testng)
+endif
+ifdef ENABLE_PREVIEW
+TEST_JAVAX += --enable-preview
 endif
 TEST_JAVAX += --patch-module $(MODULE)=$(TEST_CLASS_OUTPUT)
 TEST_JAVAX += --module $(MODULE)/$(TESTING_MAIN)

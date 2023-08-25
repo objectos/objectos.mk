@@ -46,6 +46,10 @@ COMPILE_MODULE_PATH = $(call module-path,$(COMPILE_DEPS))
 ## - do no set the module-path for artifacts that have no compile-time deps
 JAVACX = $(JAVAC)
 JAVACX += -d $(CLASS_OUTPUT)
+JAVACX += -Xlint:all
+ifdef ENABLE_PREVIEW
+JAVACX += --enable-preview
+endif
 ifneq ($(COMPILE_MODULE_PATH),)
 JAVACX += --module-path $(COMPILE_MODULE_PATH)
 endif
