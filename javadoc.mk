@@ -22,19 +22,29 @@ JAVADOC_MARKER := $(JAVADOC_OUTPUT)/index.html
 
 ## javadoc command
 JAVADOCX = $(JAVADOC)
+JAVADOCX += -d $(JAVADOC_OUTPUT)
+ifdef ENABLE_PREVIEW
+JAVADOCX += --enable-preview
+endif
 ifneq ($(COMPILE_MODULE_PATH),)
 JAVADOCX += --module-path $(COMPILE_MODULE_PATH)
 endif
-JAVADOCX += -d $(JAVADOC_OUTPUT)
+JAVADOCX += --release $(JAVA_RELEASE)
+JAVADOCX += --source-path $(MAIN)
 JAVADOCX += -bottom 'Copyright &\#169; 2022&\#x2013;2023 <a href="https://www.objectos.com.br/">Objectos Software LTDA</a>. All rights reserved.'
 JAVADOCX += -charset 'UTF-8'
 JAVADOCX += -docencoding 'UTF-8'
 JAVADOCX += -doctitle '$(GROUP_ID):$(ARTIFACT_ID) $(VERSION) API'
+JAVADOCX += -encoding 'UTF-8'
 JAVADOCX += -protected
 JAVADOCX += -use
 JAVADOCX += -version
 JAVADOCX += -windowtitle '$(GROUP_ID):$(ARTIFACT_ID) $(VERSION) API'
-JAVADOCX += $(SOURCES)
+ifdef JAVADOC_PACKAGES
+JAVADOCX += $(JAVADOC_PACKAGES)
+else
+JAVADOCX += $(MODULE)
+endif
 
 ## javadoc artifact
 JAVADOC_ARTIFACT := $(WORK)/$(ARTIFACT_ID)-$(VERSION)-javadoc.jar
