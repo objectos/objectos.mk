@@ -50,6 +50,7 @@ TEST_JAVACX += --class-path $(CLASS_OUTPUT)$(CLASS_PATH_SEPARATOR)$(TEST_COMPILE
 ifdef ENABLE_PREVIEW
 TEST_JAVACX += --enable-preview
 endif
+TEST_JAVACX += --release $(JAVA_RELEASE)
 TEST_JAVACX += $(TEST_MODIFIED_SOURCES)
 
 ## test runtime dependencies

@@ -35,7 +35,6 @@ JAVA := $(JAVA_HOME_BIN)/java
 JAVAC := $(JAVA_HOME_BIN)/javac
 JAVAC += -g
 JAVAC += -Xpkginfo:always
-JAVAC += --release $(JAVA_RELEASE)
 
 ## jar common options
 JAR := $(JAVA_HOME_BIN)/jar

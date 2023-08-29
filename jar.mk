@@ -54,6 +54,7 @@ ifneq ($(COMPILE_MODULE_PATH),)
 JAVACX += --module-path $(COMPILE_MODULE_PATH)
 endif
 JAVACX += --module-version $(VERSION)
+JAVACX += --release $(JAVA_RELEASE)
 JAVACX += $(MODIFIED_SOURCES)
 
 ## main generated artifact
