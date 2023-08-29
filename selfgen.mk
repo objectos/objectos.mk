@@ -42,6 +42,7 @@ SELFGEN_COMPILE_MODULE_PATH = $(call module-path,$(SELFGEN_COMPILE_DEPS))
 ## selfgen javac command
 SELFGEN_JAVACX = $(JAVAC)
 SELFGEN_JAVACX += -d $(SELFGEN_CLASS_OUTPUT)
+SELFGEN_JAVACX += -Xlint:all
 ifdef SELFGEN_ENABLE_PREVIEW
 SELFGEN_JAVACX += --enable-preview
 endif
