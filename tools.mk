@@ -49,5 +49,8 @@ CURL += --fail
 ## gpg common options
 GPG := gpg
 
+## jq common options
+JQ := jq
+
 ## sed common options
 SED := sed
