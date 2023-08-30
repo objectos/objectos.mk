@@ -30,6 +30,9 @@ ifneq ($(COMPILE_MODULE_PATH),)
 JAVADOCX += --module-path $(COMPILE_MODULE_PATH)
 endif
 JAVADOCX += --release $(JAVA_RELEASE)
+ifdef JAVADOC_SNIPPET_PATH
+JAVADOCX += --snippet-path $(JAVADOC_SNIPPET_PATH)
+endif 
 JAVADOCX += --source-path $(MAIN)
 JAVADOCX += -bottom 'Copyright &\#169; 2022&\#x2013;2023 <a href="https://www.objectos.com.br/">Objectos Software LTDA</a>. All rights reserved.'
 JAVADOCX += -charset 'UTF-8'
