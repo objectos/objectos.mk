@@ -76,6 +76,7 @@ GH_RELEASE_CURLX += --header "X-GitHub-Api-Version: 2022-11-28"
 GH_RELEASE_CURLX += --location
 GH_RELEASE_CURLX += --request POST
 GH_RELEASE_CURLX +=  $(GH_API)/releases
+
 #
 # Targets
 #
@@ -102,7 +103,3 @@ $(GH_RELEASE_BODY): $(GH_ISSUES_JSON)
 
 $(GH_RELEASE_JSON): $(GH_RELEASE_BODY)
 	$(GH_RELEASE_JQX) > $(GH_RELEASE_JSON) 
-
-.PHONY: milestone
-milestone:
-	echo $(GH_MILESTONE_ID)
