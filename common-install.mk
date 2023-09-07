@@ -14,22 +14,16 @@
 # limitations under the License.
 #
 
-#
-# work base dir
-#
-
-WORK := $(MODULE)/work
-
-ifdef SELFGEN_MODULE
-SELFGEN_WORK := $(SELFGEN_MODULE)/work
-endif
+## install location
+INSTALL = $(call dependency,$(GROUP_ID),$(ARTIFACT_ID),$(VERSION))
 
 #
-# clean target
+# install target
 #
-.PHONY: clean
-clean:
-	rm -rf $(WORK)/*
-ifdef SELFGEN_MODULE
-	rm -rf $(SELFGEN_WORK)/*
-endif
+.PHONY: install
+install: $(INSTALL)
+
+$(INSTALL): jar
+	mkdir --parents $(@D)
+	cp $(ARTIFACT) $@
+	

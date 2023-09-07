@@ -14,16 +14,22 @@
 # limitations under the License.
 #
 
-## install location
-INSTALL := $(call dependency,$(GROUP_ID),$(ARTIFACT_ID),$(VERSION))
+## sources jar artifact
+SOURCE_ARTIFACT = $(WORK)/$(ARTIFACT_ID)-$(VERSION)-sources.jar
+
+## sources jar command
+SOURCE_JARX = $(JAR)
+SOURCE_JARX += --create
+SOURCE_JARX += --file $(SOURCE_ARTIFACT)
+SOURCE_JARX += -C $(SOURCE_PATH)
+SOURCE_JARX += .
 
 #
-# install target
+# source-jar target
 #
-.PHONY: install
-install: $(INSTALL)
+.PHONY: source-jar
+source-jar: $(SOURCE_ARTIFACT)
 
-$(INSTALL): jar
-	mkdir --parents $(@D)
-	cp $(ARTIFACT) $@
+$(SOURCE_ARTIFACT): $(SOURCES)
+	$(SOURCE_JARX)
 	

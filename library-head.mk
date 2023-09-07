@@ -14,22 +14,9 @@
 # limitations under the License.
 #
 
-## sources jar artifact
-SOURCE_ARTIFACT := $(WORK)/$(ARTIFACT_ID)-$(VERSION)-sources.jar
+.PHONY: all
+all: jar
 
-## sources jar command
-SOURCE_JARX = $(JAR)
-SOURCE_JARX += --create
-SOURCE_JARX += --file $(SOURCE_ARTIFACT)
-SOURCE_JARX += -C $(SOURCE_PATH)
-SOURCE_JARX += .
-
-#
-# source-jar target
-#
-.PHONY: source-jar
-source-jar: $(SOURCE_ARTIFACT)
-
-$(SOURCE_ARTIFACT): $(SOURCES)
-	$(SOURCE_JARX)
-	
+.PHONY: clean
+clean:
+	rm -rf $(WORK)/*

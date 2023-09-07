@@ -32,10 +32,10 @@ GPGX += --pinentry-mode loopback
 GPGX += --yes
 
 ## ossrh artifact
-OSSRH_ARTIFACT := $(WORK)/$(ARTIFACT_ID)-$(VERSION)-bundle.jar
+OSSRH_ARTIFACT = $(WORK)/$(ARTIFACT_ID)-$(VERSION)-bundle.jar
 
 ## ossrh jars
-OSSRH_JARS := $(ARTIFACT)
+OSSRH_JARS = $(ARTIFACT)
 OSSRH_JARS += $(POM_ARTIFACT)
 OSSRH_JARS += $(SOURCE_ARTIFACT)
 OSSRH_JARS += $(JAVADOC_ARTIFACT)
@@ -51,10 +51,10 @@ OSSRH_JARX += $(OSSRH_JARS:$(WORK)/%=-C $(WORK) %)
 OSSRH_JARX += $(OSSRH_SIGS:$(WORK)/%=-C $(WORK) %)
 
 ## cookies
-OSSRH_COOKIES := $(WORK)/ossrh-cookies.txt 
+OSSRH_COOKIES = $(WORK)/ossrh-cookies.txt 
 
 ## ossrh login curl command
-OSSRH_LOGIN_CURLX := $(CURL)
+OSSRH_LOGIN_CURLX = $(CURL)
 OSSRH_LOGIN_CURLX += --cookie-jar $(OSSRH_COOKIES)
 OSSRH_LOGIN_CURLX += --output /dev/null
 OSSRH_LOGIN_CURLX += --request GET
@@ -63,10 +63,10 @@ OSSRH_LOGIN_CURLX += --url https://oss.sonatype.org/service/local/authentication
 OSSRH_LOGIN_CURLX += --user $(OSSRH_USERNAME):$(OSSRH_PASSWORD)
 
 ## ossrh response json
-OSSRH_UPLOAD_JSON := $(WORK)/ossrh-upload.json
+OSSRH_UPLOAD_JSON = $(WORK)/ossrh-upload.json
 
 ## ossrh upload curl command
-OSSRH_UPLOAD_CURLX := $(CURL)
+OSSRH_UPLOAD_CURLX = $(CURL)
 OSSRH_UPLOAD_CURLX += --cookie $(OSSRH_COOKIES)
 OSSRH_UPLOAD_CURLX += --header 'Content-Type: multipart/form-data'
 OSSRH_UPLOAD_CURLX += --form file=@$(OSSRH_ARTIFACT)

@@ -24,16 +24,16 @@
 # - you must provide the pom template $(MODULE)/pom.xml.tmpl
 
 ## pom source
-POM_SOURCE := $(MODULE)/pom.xml.tmpl
+POM_SOURCE = $(MODULE)/pom.xml.tmpl
 
 ## pom file
-POM_ARTIFACT := $(WORK)/pom.xml
+POM_ARTIFACT = $(WORK)/pom.xml
 
 ## pom external variables
 # POM_VARIABLES = 
 
 ## ossrh pom sed command
-POM_SEDX := $(SED)
+POM_SEDX = $(SED)
 POM_SEDX += $(foreach var,$(POM_VARIABLES),--expression='s/%%$(var)%%/$($(var))/g')
 POM_SEDX += --expression='s/%%ARTIFACT_ID%%/$(ARTIFACT_ID)/g'
 POM_SEDX += --expression='s/%%GROUP_ID%%/$(GROUP_ID)/g'

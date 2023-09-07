@@ -19,22 +19,25 @@
 #
 
 ## main base dir
-MAIN := $(MODULE)/main
+MAIN = $(MODULE)/main
 
 ## main source path
-SOURCE_PATH := $(MAIN)
+SOURCE_PATH = $(MAIN)
 
 ## main source files
-SOURCES := $(shell find ${SOURCE_PATH} -type f -name '*.java' -print)
+SOURCES = $(shell find ${SOURCE_PATH} -type f -name '*.java' -print)
 
 ## main source files modified since last compilation
 MODIFIED_SOURCES :=
 
+## main work dir
+WORK = $(MODULE)/work
+
 ## main class output path
-CLASS_OUTPUT := $(WORK)/main
+CLASS_OUTPUT = $(WORK)/main
 
 ## main compiled classes
-CLASSES := $(SOURCES:$(SOURCE_PATH)/%.java=$(CLASS_OUTPUT)/%.class)
+CLASSES = $(SOURCES:$(SOURCE_PATH)/%.java=$(CLASS_OUTPUT)/%.class)
 
 ## main compile-time dependencies
 # COMPILE_DEPS = 
@@ -58,7 +61,7 @@ JAVACX += --release $(JAVA_RELEASE)
 JAVACX += $(MODIFIED_SOURCES)
 
 ## main generated artifact
-ARTIFACT := $(WORK)/$(ARTIFACT_ID)-$(VERSION).jar
+ARTIFACT = $(WORK)/$(ARTIFACT_ID)-$(VERSION).jar
 
 ## main jar command
 JARX = $(JAR)

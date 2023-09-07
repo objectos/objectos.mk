@@ -15,10 +15,10 @@
 #
 
 ## javadoc output path
-JAVADOC_OUTPUT := $(WORK)/javadoc
+JAVADOC_OUTPUT = $(WORK)/javadoc
 
 ## javadoc marker
-JAVADOC_MARKER := $(JAVADOC_OUTPUT)/index.html
+JAVADOC_MARKER = $(JAVADOC_OUTPUT)/index.html
 
 ## javadoc command
 JAVADOCX = $(JAVADOC)
@@ -47,7 +47,7 @@ JAVADOCX += -version
 JAVADOCX += -windowtitle '$(GROUP_ID):$(ARTIFACT_ID) $(VERSION) API'
 
 ## javadoc artifact
-JAVADOC_ARTIFACT := $(WORK)/$(ARTIFACT_ID)-$(VERSION)-javadoc.jar
+JAVADOC_ARTIFACT = $(WORK)/$(ARTIFACT_ID)-$(VERSION)-javadoc.jar
 
 ## javadoc jar command
 JAVADOC_JARX = $(JAR)
