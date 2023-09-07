@@ -27,9 +27,9 @@ ifdef ENABLE_PREVIEW
 JAVADOCX += --enable-preview
 endif
 JAVADOCX += --module $(MODULE)
-#ifneq ($(COMPILE_MODULE_PATH),)
+ifneq ($(COMPILE_MODULE_PATH),)
 JAVADOCX += --module-path $(COMPILE_MODULE_PATH)
-#endif
+endif
 JAVADOCX += --module-source-path "./*/main"
 JAVADOCX += --release $(JAVA_RELEASE)
 JAVADOCX += --show-module-contents api
