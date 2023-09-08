@@ -39,20 +39,35 @@ LIBRARY_SELFGEN_BODY := $(LIBRARY_BODY)
 LIBRARY_SELFGEN_BODY += selfgen.mk
 LIBRARY_SELFGEN_BODY += selfgen-test.mk
 
-LIBRARY_SELFGEN_ARTIFACT := library-with-selfgen.mk 
+LIBRARY_SELFGEN_ARTIFACT := library-with-selfgen.mk
+
+# library-with-demo.mk 
+
+LIBRARY_DEMO_HEAD := library-with-demo-head.mk
+
+LIBRARY_DEMO_BODY := $(LIBRARY_BODY)
+LIBRARY_DEMO_BODY += demo.mk
+
+LIBRARY_DEMO_ARTIFACT := library-with-demo.mk
 
 .PHONY: all
-all: clean library library-selfgen
+all: clean library library-demo library-selfgen
 
 .PHONY: clean
 clean:
-	rm -f $(LIBRARY_ARTIFACT) $(LIBRARY_SELFGEN_ARTIFACT)
+	rm -f $(LIBRARY_ARTIFACT) $(LIBRARY_DEMO_ARTIFACT) $(LIBRARY_SELFGEN_ARTIFACT) 
 
 .PHONY: library
 library: $(LIBRARY_ARTIFACT)
 
 $(LIBRARY_ARTIFACT): $(LIBRARY_HEAD) $(LIBRARY_BODY)
 	 echo $(LIBRARY_BODY) | xargs tail -n +16 --quiet | cat $(LIBRARY_HEAD) - > $(LIBRARY_ARTIFACT)
+
+.PHONY: library-demo
+library-demo: $(LIBRARY_DEMO_ARTIFACT)
+
+$(LIBRARY_DEMO_ARTIFACT): $(LIBRARY_DEMO_HEAD) $(LIBRARY_DEMO_BODY)
+	 echo $(LIBRARY_DEMO_BODY) | xargs tail -n +16 --quiet | cat $(LIBRARY_DEMO_HEAD) - > $(LIBRARY_DEMO_ARTIFACT)
 	 
 .PHONY: library-selfgen
 library-selfgen: $(LIBRARY_SELFGEN_ARTIFACT)
