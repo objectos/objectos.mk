@@ -27,6 +27,9 @@ SELFGEN_SOURCES := $(shell find ${SELFGEN_SOURCE_PATH} -type f -name '*.java' -p
 ## selfgen source files modified since last compilation
 SELFGEN_MODIFIED_SOURCES :=
 
+## selfgen work dir
+SELFGEN_WORK := $(SELFGEN_MODULE)/work
+
 ## selfgen class output path
 SELFGEN_CLASS_OUTPUT := $(SELFGEN_WORK)/main
 

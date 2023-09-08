@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+# library.mk
+
 LIBRARY_HEAD := library-head.mk
 
 LIBRARY_BODY := common-tools.mk
@@ -27,17 +29,33 @@ LIBRARY_BODY += common-pom.mk
 LIBRARY_BODY += common-ossrh.mk
 LIBRARY_BODY += common-release.mk
 
-LIBRARY_ARTIFACT := library.mk 
+LIBRARY_ARTIFACT := library.mk
+
+# library-with-selfgen.mk
+
+LIBRARY_SELFGEN_HEAD := library-with-selfgen-head.mk
+
+LIBRARY_SELFGEN_BODY := $(LIBRARY_BODY)
+LIBRARY_SELFGEN_BODY += selfgen.mk
+LIBRARY_SELFGEN_BODY += selfgen-test.mk
+
+LIBRARY_SELFGEN_ARTIFACT := library-with-selfgen.mk 
 
 .PHONY: all
-all: clean library
+all: clean library library-selfgen
 
 .PHONY: clean
 clean:
-	rm $(LIBRARY_ARTIFACT)
+	rm -f $(LIBRARY_ARTIFACT) $(LIBRARY_SELFGEN_ARTIFACT)
 
 .PHONY: library
 library: $(LIBRARY_ARTIFACT)
 
 $(LIBRARY_ARTIFACT): $(LIBRARY_HEAD) $(LIBRARY_BODY)
 	 echo $(LIBRARY_BODY) | xargs tail -n +16 --quiet | cat $(LIBRARY_HEAD) - > $(LIBRARY_ARTIFACT)
+	 
+.PHONY: library-selfgen
+library-selfgen: $(LIBRARY_SELFGEN_ARTIFACT)
+
+$(LIBRARY_SELFGEN_ARTIFACT): $(LIBRARY_SELFGEN_HEAD) $(LIBRARY_SELFGEN_BODY)
+	 echo $(LIBRARY_SELFGEN_BODY) | xargs tail -n +16 --quiet | cat $(LIBRARY_SELFGEN_HEAD) - > $(LIBRARY_SELFGEN_ARTIFACT)
