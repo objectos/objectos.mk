@@ -36,6 +36,12 @@ WORK = $(MODULE)/work
 ## main class output path
 CLASS_OUTPUT = $(WORK)/main
 
+## META-INF
+META_INF_DIR = $(CLASS_OUTPUT)/META-INF
+
+## license 'artifact'
+LICENSE_ARTIFACT = $(META_INF_DIR)/LICENSE
+
 ## main compiled classes
 CLASSES = $(SOURCES:$(SOURCE_PATH)/%.java=$(CLASS_OUTPUT)/%.class)
 
@@ -77,7 +83,7 @@ JARX += .
 .PHONY: jar
 jar: $(ARTIFACT)
 
-$(ARTIFACT): $(COMPILE_DEPS) $(CLASSES)
+$(ARTIFACT): $(COMPILE_DEPS) $(CLASSES) $(LICENSE_ARTIFACT)
 	if [ -n "$(MODIFIED_SOURCES)" ]; then \
 		$(JAVACX); \
 	fi
@@ -85,3 +91,7 @@ $(ARTIFACT): $(COMPILE_DEPS) $(CLASSES)
 
 $(CLASSES): $(CLASS_OUTPUT)/%.class: $(SOURCE_PATH)/%.java
 	$(eval MODIFIED_SOURCES += $$<)
+
+$(LICENSE_ARTIFACT): LICENSE
+	mkdir -p $(META_INF_DIR)
+	cp LICENSE $(META_INF_DIR)
