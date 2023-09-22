@@ -15,32 +15,29 @@
 #
 
 #
-# test options
+# @name@ test options
 #
 
-## test base dir
-TEST = $(MODULE)/test
-
-## test source path
-TEST_SOURCE_PATH = $(TEST)
+## @name@ test base dir
+@prefix@TEST = @module@/test
 
 ## test source files 
-TEST_SOURCES = $(shell find ${TEST_SOURCE_PATH} -type f -name '*.java' -print)
+@prefix@TEST_SOURCES = $(shell find ${@prefix@TEST} -type f -name '*.java' -print)
 
 ## test source files modified since last compilation
-TEST_MODIFIED_SOURCES :=
+@prefix@TEST_DIRTY :=
 
 ## test class output path
-TEST_CLASS_OUTPUT = $(WORK)/test
+@prefix@TEST_CLASS_OUTPUT = $(@prefix@WORK)/test
 
 ## test compiled classes
-TEST_CLASSES = $(TEST_SOURCES:$(TEST_SOURCE_PATH)/%.java=$(TEST_CLASS_OUTPUT)/%.class)
+@prefix@TEST_CLASSES = $(@prefix@TEST_SOURCES:$(@prefix@TEST)/%.java=$(@prefix@TEST_CLASS_OUTPUT)/%.class)
 
 ## test compile-time dependencies
-# TEST_COMPILE_DEPS =
+# @prefix@TEST_COMPILE_DEPS =
 
 ## test compile-time class path
-TEST_COMPILE_CLASS_PATH = $(call class-path,$(TEST_COMPILE_DEPS)) 
+@prefix@TEST_COMPILE_CLASS_PATH = $(call class-path,$(TEST_COMPILE_DEPS)) 
 
 ## test javac command
 TEST_JAVACX = $(JAVAC)
