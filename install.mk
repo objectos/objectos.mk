@@ -14,16 +14,18 @@
 # limitations under the License.
 #
 
-## install location
-INSTALL = $(call dependency,$(GROUP_ID),$(ARTIFACT_ID),$(VERSION))
+#
+# @name@ install options
+#
+
+## @name@ install location
+@prefix@INSTALL = $(call dependency,$(@prefix@GROUP_ID),$(@prefix@ARTIFACT_ID),$(@prefix@VERSION))
 
 #
-# install target
+# @name@ install target
 #
-.PHONY: install
-install: $(INSTALL)
 
-$(INSTALL): jar
+$(@prefix@INSTALL): $(@prefix@JAR_FILE)
 	mkdir --parents $(@D)
-	cp $(ARTIFACT) $@
+	cp $(@prefix@JAR_FILE) $@
 	
