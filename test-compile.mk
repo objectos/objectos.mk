@@ -42,11 +42,11 @@
 @prefix@TEST_JAVACX += -g
 @prefix@TEST_JAVACX += -Xlint:all
 @prefix@TEST_JAVACX += --class-path $(call class-path,$(@prefix@TEST_COMPILE_DEPS))
-ifdef @prefix@ENABLE_PREVIEW
+ifeq ($(@prefix@ENABLE_PREVIEW),1)
 @prefix@TEST_JAVACX += --enable-preview
 endif
 @prefix@TEST_JAVACX += --release $(@prefix@JAVA_RELEASE)
-@prefix@TEST_JAVACX += $(@prefix@DIRTY)
+@prefix@TEST_JAVACX += $(@prefix@TEST_DIRTY)
 
 ## @name@ test compilation marker
 @prefix@TEST_COMPILE_MARKER = $(@prefix@WORK)/test-compile-marker

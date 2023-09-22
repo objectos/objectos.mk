@@ -48,7 +48,7 @@
 @prefix@JAVACX += -g
 @prefix@JAVACX += -Xlint:all
 @prefix@JAVACX += -Xpkginfo:always
-ifdef @prefix@ENABLE_PREVIEW
+ifeq ($(@prefix@ENABLE_PREVIEW),1)
 @prefix@JAVACX += --enable-preview
 endif
 ifneq ($(@prefix@COMPILE_MODULE_PATH),)
