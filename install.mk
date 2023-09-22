@@ -28,4 +28,3 @@
 $(@prefix@INSTALL): $(@prefix@JAR_FILE)
 	mkdir --parents $(@D)
 	cp $(@prefix@JAR_FILE) $@
-	

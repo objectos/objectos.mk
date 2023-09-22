@@ -19,7 +19,7 @@
 #
 
 ## @name@ source directory
-@prefix@MAIN = @module@/main
+@prefix@MAIN = $(@prefix@MODULE)/main
 
 ## @name@ source files
 @prefix@SOURCES = $(shell find ${@prefix@MAIN} -type f -name '*.java' -print)
@@ -28,7 +28,7 @@
 @prefix@DIRTY :=
 
 ## @name@ work dir
-@prefix@WORK = @module@/work
+@prefix@WORK = $(@prefix@MODULE)/work
 
 ## @name@ class output path
 @prefix@CLASS_OUTPUT = $(@prefix@WORK)/main

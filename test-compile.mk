@@ -19,7 +19,7 @@
 #
 
 ## @name@ test source directory
-@prefix@TEST = @module@/test
+@prefix@TEST = $(@prefix@MODULE)/test
 
 ## @name@ test source files 
 @prefix@TEST_SOURCES = $(shell find ${@prefix@TEST} -type f -name '*.java' -print)
