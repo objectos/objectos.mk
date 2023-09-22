@@ -56,7 +56,7 @@ endif
 #
 
 $(@prefix@TEST_COMPILE_MARKER): $(@prefix@TEST_COMPILE_DEPS) $(@prefix@TEST_CLASSES) 
-	if [ -n "$(@prefix@DIRTY)" ]; then \
+	if [ -n "$(@prefix@TEST_DIRTY)" ]; then \
 		$(@prefix@TEST_JAVACX); \
 		touch $(@prefix@TEST_COMPILE_MARKER); \
 	fi
