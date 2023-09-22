@@ -14,9 +14,26 @@
 # limitations under the License.
 #
 
-.PHONY: all
-all: jar
+#
+# Defines the java tools
+#
 
-.PHONY: clean
-clean:
-	rm -rf $(WORK)/*
+## configures JAVA_HOME_BIN
+ifdef JAVA_HOME
+JAVA_HOME_BIN := $(JAVA_HOME)/bin
+else
+JAVA_HOME_BIN :=
+endif
+
+## java command
+JAVA := $(JAVA_HOME_BIN)/java
+
+## javac command
+JAVAC := $(JAVA_HOME_BIN)/javac
+JAVAC += -g
+
+## jar command
+JAR := $(JAVA_HOME_BIN)/jar
+
+## javadoc command
+JAVADOC := $(JAVA_HOME_BIN)/javadoc
