@@ -68,8 +68,8 @@ endif
 $(@prefix@COMPILE_MARKER): $(@prefix@COMPILE_DEPS) $(@prefix@CLASSES)
 	if [ -n "$(@prefix@DIRTY)" ]; then \
 		$(@prefix@JAVACX); \
+		touch $(@prefix@COMPILE_MARKER); \
 	fi
-	touch $(@prefix@COMPILE_MARKER)
 
 $(@prefix@CLASSES): $(@prefix@CLASS_OUTPUT)/%.class: $(@prefix@MAIN)/%.java
 	$(eval @prefix@DIRTY += $$<)
