@@ -32,11 +32,18 @@
 @prefix@JARX += -C $(@prefix@CLASS_OUTPUT)
 @prefix@JARX += .
 
+## requirements of the @prefix@JAR_FILE target
+@prefix@JAR_FILE_REQS = $(@prefix@COMPILE_MARKER)
+@prefix@JAR_FILE_REQS += $(@prefix@LICENSE)
+ifdef @prefix@JAR_FILE_REQS_MORE
+@prefix@JAR_FILE_REQS += $(@prefix@JAR_FILE_REQS_MORE)
+endif
+
 #
 # @name@ jar targets
 #
 
-$(@prefix@JAR_FILE): $(@prefix@COMPILE_MARKER) $(@prefix@LICENSE)
+$(@prefix@JAR_FILE): $(@prefix@JAR_FILE_REQS)
 	$(@prefix@JARX)
 
 $(@prefix@LICENSE): LICENSE
