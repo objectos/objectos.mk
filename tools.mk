@@ -14,32 +14,28 @@
 # limitations under the License.
 #
 
-# Delete the default suffixes
-.SUFFIXES:
-
 #
-# Tool options
+# Defines the tools
 #
 
-## java home
+## configures JAVA_HOME_BIN
 ifdef JAVA_HOME
 JAVA_HOME_BIN := $(JAVA_HOME)/bin
 else
 JAVA_HOME_BIN :=
 endif
 
-## java common options
+## java command
 JAVA := $(JAVA_HOME_BIN)/java
 
-## javac common options
+## javac command
 JAVAC := $(JAVA_HOME_BIN)/javac
 JAVAC += -g
-JAVAC += -Xpkginfo:always
 
-## jar common options
+## jar command
 JAR := $(JAVA_HOME_BIN)/jar
 
-## javadoc common options
+## javadoc command
 JAVADOC := $(JAVA_HOME_BIN)/javadoc
 
 ## curl common options
