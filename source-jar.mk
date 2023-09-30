@@ -14,22 +14,24 @@
 # limitations under the License.
 #
 
-## sources jar artifact
-SOURCE_ARTIFACT = $(WORK)/$(ARTIFACT_ID)-$(VERSION)-sources.jar
+#
+# @name@ source-jar options
+#
 
-## sources jar command
-SOURCE_JARX = $(JAR)
-SOURCE_JARX += --create
-SOURCE_JARX += --file $(SOURCE_ARTIFACT)
-SOURCE_JARX += -C $(SOURCE_PATH)
-SOURCE_JARX += .
+## @name@ source-jar file
+@prefix@SOURCE_JAR_FILE = $(@prefix@WORK)/$(@prefix@JAR_NAME)-$(@prefix@VERSION)-sources.jar
+
+## @name@ source-jar command
+@prefix@SOURCE_JARX = $(JAR)
+@prefix@SOURCE_JARX += --create
+@prefix@SOURCE_JARX += --file $(@prefix@SOURCE_JAR_FILE)
+@prefix@SOURCE_JARX += -C $(@prefix@MAIN)
+@prefix@SOURCE_JARX += .
 
 #
-# source-jar target
+# @name@ source-jar targets
 #
-.PHONY: source-jar
-source-jar: $(SOURCE_ARTIFACT)
 
-$(SOURCE_ARTIFACT): $(SOURCES)
-	$(SOURCE_JARX)
+$(@prefix@SOURCE_JAR_FILE): $(@prefix@SOURCES)
+	$(@prefix@SOURCE_JARX)
 	
