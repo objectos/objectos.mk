@@ -63,7 +63,7 @@
 # @name@ ossrh targets
 #
 
-@prefix@OSSRH_MARKER: $(@prefix@OSSRH_UPLOAD_JSON)
+$(@prefix@OSSRH_MARKER): $(@prefix@OSSRH_UPLOAD_JSON)
 	@for i in 1 2 3; do \
 	  echo "Waiting before release..."; \
 	  sleep 45; \
