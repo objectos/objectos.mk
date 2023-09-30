@@ -59,7 +59,7 @@ $(@prefix@TEST_COMPILE_MARKER): $(@prefix@TEST_COMPILE_DEPS) $(@prefix@TEST_CLAS
 	if [ -n "$(@prefix@TEST_DIRTY)" ]; then \
 		$(@prefix@TEST_JAVACX); \
 	fi
-	touch $(@prefix@TEST_COMPILE_MARKER); \
+	touch $@
 
 $(@prefix@TEST_CLASSES): $(@prefix@TEST_CLASS_OUTPUT)/%.class: $(@prefix@TEST)/%.java
 	$(eval @prefix@TEST_DIRTY += $$<)

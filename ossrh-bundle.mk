@@ -36,7 +36,7 @@
 ## @name@ ossrh sigs
 @prefix@OSSRH_SIGS = $(@prefix@OSSRH_CONTENTS:%=%.asc)
 
-## ossrh jar command
+## @name@ ossrh bundle jar command
 @prefix@OSSRH_JARX = $(JAR)
 @prefix@OSSRH_JARX += --create
 @prefix@OSSRH_JARX += --file $(@prefix@OSSRH_BUNDLE)
