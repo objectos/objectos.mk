@@ -90,6 +90,7 @@ endif
 
 $(@prefix@GH_RELEASE_MARKER): $(@prefix@GH_RELEASE_JSON)
 	@$(@prefix@GH_RELEASE_CURLX)
+	touch $@
 
 $(@prefix@GH_RELEASE_JSON): $(@prefix@GH_RELEASE_BODY)
 	$(@prefix@GH_RELEASE_JQX) > $(@prefix@GH_RELEASE_JSON) 
