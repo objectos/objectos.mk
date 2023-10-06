@@ -58,6 +58,9 @@ endif
 @prefix@JAVACX += --release $(@prefix@JAVA_RELEASE)
 @prefix@JAVACX += $(@prefix@DIRTY)
 
+## @name@ resources
+# @prefix@RESOURCES =
+
 ## @name@ compilation marker
 @prefix@COMPILE_MARKER = $(@prefix@WORK)/compile-marker
 
@@ -65,7 +68,7 @@ endif
 # @name@ compilation targets
 #
 
-$(@prefix@COMPILE_MARKER): $(@prefix@COMPILE_DEPS) $(@prefix@CLASSES)
+$(@prefix@COMPILE_MARKER): $(@prefix@COMPILE_DEPS) $(@prefix@CLASSES) $(@prefix@RESOURCES)
 	if [ -n "$(@prefix@DIRTY)" ]; then \
 		$(@prefix@JAVACX); \
 	fi
