@@ -34,6 +34,9 @@ endif
 @prefix@TEST_JAVAX += --module-path $(call module-path,$(@prefix@TEST_RUNTIME_DEPS))
 @prefix@TEST_JAVAX += --add-modules org.testng
 @prefix@TEST_JAVAX += --add-reads $(@prefix@MODULE)=org.testng
+ifdef @prefix@TEST_JAVAX_READS
+@prefix@TEST_JAVAX += $(foreach mod,$(@prefix@TEST_JAVAX_READS),--add-reads $(@prefix@MODULE)=$(mod))
+endif
 ifdef @prefix@TEST_JAVAX_EXPORTS
 @prefix@TEST_JAVAX += $(foreach pkg,$(@prefix@TEST_JAVAX_EXPORTS),--add-exports $(@prefix@MODULE)/$(pkg)=org.testng)
 endif
