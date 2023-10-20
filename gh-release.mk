@@ -114,3 +114,8 @@ $(@prefix@GH_RELEASE_BODY): $(@prefix@GH_ISSUES_JSON)
 	echo '## Documentation' >> $(@prefix@GH_RELEASE_BODY)
 	echo '' >> $(@prefix@GH_RELEASE_BODY)
 	$(call @prefix@gh_issues,t:documentation) >> $(@prefix@GH_RELEASE_BODY) 
+	echo '' >> $(@prefix@GH_RELEASE_BODY)
+	echo '## Work' >> $(@prefix@GH_RELEASE_BODY)
+	echo '' >> $(@prefix@GH_RELEASE_BODY)
+	$(call @prefix@gh_issues,t:work) >> $(@prefix@GH_RELEASE_BODY) 
+	
