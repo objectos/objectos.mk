@@ -18,7 +18,7 @@
 # compilation options
 #
 
-define COMPILE
+define COMPILE_TASK
 
 ## source directory
 $(1)MAIN = $$($(1)MODULE)/main

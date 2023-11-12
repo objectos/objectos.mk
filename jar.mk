@@ -15,37 +15,41 @@
 #
 
 #
-# @name@ jar options
+# jar options
 #
 
-## @name@ license 'artifact'
-@prefix@LICENSE = $(@prefix@CLASS_OUTPUT)/META-INF/LICENSE
+define JAR_TASK
 
-## @name@ jar file path
-@prefix@JAR_FILE = $(@prefix@WORK)/$(@prefix@JAR_NAME)-$(@prefix@VERSION).jar
+## license 'artifact'
+$(1)LICENSE = $$($(1)CLASS_OUTPUT)/META-INF/LICENSE
 
-## @name@ jar command
-@prefix@JARX = $(JAR)
-@prefix@JARX += --create
-@prefix@JARX += --file $(@prefix@JAR_FILE)
-@prefix@JARX += --module-version $(@prefix@VERSION)
-@prefix@JARX += -C $(@prefix@CLASS_OUTPUT)
-@prefix@JARX += .
+## jar file path
+$(1)JAR_FILE = $$($(1)WORK)/$$($(1)JAR_NAME)-$$($(1)VERSION).jar
 
-## requirements of the @prefix@JAR_FILE target
-@prefix@JAR_FILE_REQS = $(@prefix@COMPILE_MARKER)
-@prefix@JAR_FILE_REQS += $(@prefix@LICENSE)
-ifdef @prefix@JAR_FILE_REQS_MORE
-@prefix@JAR_FILE_REQS += $(@prefix@JAR_FILE_REQS_MORE)
+## jar command
+$(1)JARX = $$(JAR)
+$(1)JARX += --create
+$(1)JARX += --file $$($(1)JAR_FILE)
+$(1)JARX += --module-version $$($(1)VERSION)
+$(1)JARX += -C $$($(1)CLASS_OUTPUT)
+$(1)JARX += .
+
+## requirements of the $(1)JAR_FILE target
+$(1)JAR_FILE_REQS = $$($(1)COMPILE_MARKER)
+$(1)JAR_FILE_REQS += $$($(1)LICENSE)
+ifdef $(1)JAR_FILE_REQS_MORE
+$(1)JAR_FILE_REQS += $$($(1)JAR_FILE_REQS_MORE)
 endif
 
 #
-# @name@ jar targets
+# jar targets
 #
 
-$(@prefix@JAR_FILE): $(@prefix@JAR_FILE_REQS)
-	$(@prefix@JARX)
+$$($(1)JAR_FILE): $$($(1)JAR_FILE_REQS)
+	$$($(1)JARX)
 
-$(@prefix@LICENSE): LICENSE
-	mkdir --parents $(@D)
-	cp LICENSE $(@D)
+$$($(1)LICENSE): LICENSE
+	mkdir --parents $$(@D)
+	cp LICENSE $$(@D)
+
+endef
