@@ -15,64 +15,68 @@
 #
 
 #
-# @name@ compilation options
+# compilation options
 #
 
-## @name@ source directory
-@prefix@MAIN = $(@prefix@MODULE)/main
+define COMPILE
 
-## @name@ source files
-@prefix@SOURCES = $(shell find ${@prefix@MAIN} -type f -name '*.java' -print)
+## source directory
+$(1)MAIN = $$($(1)MODULE)/main
 
-## @name@ source files modified since last compilation
-@prefix@DIRTY :=
+## source files
+$(1)SOURCES = $$(shell find $${$(1)MAIN} -type f -name '*.java' -print)
 
-## @name@ work dir
-@prefix@WORK = $(@prefix@MODULE)/work
+## source files modified since last compilation
+$(1)DIRTY :=
 
-## @name@ class output path
-@prefix@CLASS_OUTPUT = $(@prefix@WORK)/main
+## work dir
+$(1)WORK = $$($(1)MODULE)/work
 
-## @name@ compiled classes
-@prefix@CLASSES = $(@prefix@SOURCES:$(@prefix@MAIN)/%.java=$(@prefix@CLASS_OUTPUT)/%.class)
+## class output path
+$(1)CLASS_OUTPUT = $$($(1)WORK)/main
 
-## @name@ compile-time dependencies
-# @prefix@COMPILE_DEPS = 
+## compiled classes
+$(1)CLASSES = $$($(1)SOURCES:$$($(1)MAIN)/%.java=$$($(1)CLASS_OUTPUT)/%.class)
 
-## @name@ compile-time module-path
-@prefix@COMPILE_MODULE_PATH = $(call module-path,$(@prefix@COMPILE_DEPS))
+## compile-time dependencies
+# $(1)COMPILE_DEPS = 
+
+## compile-time module-path
+$(1)COMPILE_MODULE_PATH = $$(call module-path,$$($(1)COMPILE_DEPS))
  
-## @name@ javac command
-@prefix@JAVACX = $(JAVAC)
-@prefix@JAVACX += -d $(@prefix@CLASS_OUTPUT)
-@prefix@JAVACX += -g
-@prefix@JAVACX += -Xlint:all
-@prefix@JAVACX += -Xpkginfo:always
-ifeq ($(@prefix@ENABLE_PREVIEW),1)
-@prefix@JAVACX += --enable-preview
+## javac command
+$(1)JAVACX = $$(JAVAC)
+$(1)JAVACX += -d $$($(1)CLASS_OUTPUT)
+$(1)JAVACX += -g
+$(1)JAVACX += -Xlint:all
+$(1)JAVACX += -Xpkginfo:always
+ifeq ($$($(1)ENABLE_PREVIEW),1)
+$(1)JAVACX += --enable-preview
 endif
-ifneq ($(@prefix@COMPILE_MODULE_PATH),)
-@prefix@JAVACX += --module-path $(@prefix@COMPILE_MODULE_PATH)
+ifneq ($$($(1)COMPILE_MODULE_PATH),)
+$(1)JAVACX += --module-path $$($(1)COMPILE_MODULE_PATH)
 endif
-@prefix@JAVACX += --module-version $(@prefix@VERSION)
-@prefix@JAVACX += --release $(@prefix@JAVA_RELEASE)
-@prefix@JAVACX += $(@prefix@DIRTY)
+$(1)JAVACX += --module-version $$($(1)VERSION)
+$(1)JAVACX += --release $$($(1)JAVA_RELEASE)
+$(1)JAVACX += $$($(1)DIRTY)
 
-## @name@ resources
-# @prefix@RESOURCES =
+## resources
+# $(1)RESOURCES =
 
-## @name@ compilation marker
-@prefix@COMPILE_MARKER = $(@prefix@WORK)/compile-marker
+## compilation marker
+$(1)COMPILE_MARKER = $$($(1)WORK)/compile-marker
 
 #
-# @name@ compilation targets
+# compilation targets
 #
 
-$(@prefix@COMPILE_MARKER): $(@prefix@COMPILE_DEPS) $(@prefix@CLASSES) $(@prefix@RESOURCES)
-	if [ -n "$(@prefix@DIRTY)" ]; then \
-		$(@prefix@JAVACX); \
+$$($(1)COMPILE_MARKER): $$($(1)COMPILE_DEPS) $$($(1)CLASSES) $$($(1)RESOURCES)
+	if [ -n "$$($(1)DIRTY)" ]; then \
+		$$($(1)JAVACX); \
 	fi
-	touch $@
+	touch $$@
 
-$(@prefix@CLASSES): $(@prefix@CLASS_OUTPUT)/%.class: $(@prefix@MAIN)/%.java
-	$(eval @prefix@DIRTY += $$<)
+$$($(1)CLASSES): $$($(1)CLASS_OUTPUT)/%.class: $$($(1)MAIN)/%.java
+	$$(eval $(1)DIRTY += $$$$<)
+
+endef
