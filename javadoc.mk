@@ -15,57 +15,61 @@
 #
 
 #
-# @name@ javadoc options
+# javadoc task
 #
 
-## @name@ javadoc output path
-@prefix@JAVADOC_OUTPUT = $(@prefix@WORK)/javadoc
+define JAVADOC_TASK
 
-## @name@ javadoc marker
-@prefix@JAVADOC_MARKER = $(@prefix@JAVADOC_OUTPUT)/index.html
+## javadoc output path
+$(1)JAVADOC_OUTPUT = $$($(1)WORK)/javadoc
 
-## @name@ javadoc command
-@prefix@JAVADOCX = $(JAVADOC)
-@prefix@JAVADOCX += -d $(@prefix@JAVADOC_OUTPUT)
-ifeq ($(@prefix@ENABLE_PREVIEW),1)
-@prefix@JAVADOCX += --enable-preview
+## javadoc marker
+$(1)JAVADOC_MARKER = $$($(1)JAVADOC_OUTPUT)/index.html
+
+## javadoc command
+$(1)JAVADOCX = $$(JAVADOC)
+$(1)JAVADOCX += -d $$($(1)JAVADOC_OUTPUT)
+ifeq ($$($(1)ENABLE_PREVIEW),1)
+$(1)JAVADOCX += --enable-preview
 endif
-@prefix@JAVADOCX += --module $(@prefix@MODULE)
-ifneq ($(@prefix@COMPILE_MODULE_PATH),)
-@prefix@JAVADOCX += --module-path $(@prefix@COMPILE_MODULE_PATH)
+$(1)JAVADOCX += --module $$($(1)MODULE)
+ifneq ($$($(1)COMPILE_MODULE_PATH),)
+$(1)JAVADOCX += --module-path $$($(1)COMPILE_MODULE_PATH)
 endif
-@prefix@JAVADOCX += --module-source-path "./*/main"
-@prefix@JAVADOCX += --release $(@prefix@JAVA_RELEASE)
-@prefix@JAVADOCX += --show-module-contents api
-@prefix@JAVADOCX += --show-packages exported
-ifdef @prefix@JAVADOC_SNIPPET_PATH
-@prefix@JAVADOCX += --snippet-path $($(@prefix@JAVADOC_SNIPPET_PATH))
+$(1)JAVADOCX += --module-source-path "./*/main"
+$(1)JAVADOCX += --release $$($(1)JAVA_RELEASE)
+$(1)JAVADOCX += --show-module-contents api
+$(1)JAVADOCX += --show-packages exported
+ifdef $(1)JAVADOC_SNIPPET_PATH
+$(1)JAVADOCX += --snippet-path $$($$($(1)JAVADOC_SNIPPET_PATH))
 endif 
-@prefix@JAVADOCX += -bottom 'Copyright &\#169; $(@prefix@COPYRIGHT_YEARS) <a href="https://www.objectos.com.br/">Objectos Software LTDA</a>. All rights reserved.'
-@prefix@JAVADOCX += -charset 'UTF-8'
-@prefix@JAVADOCX += -docencoding 'UTF-8'
-@prefix@JAVADOCX += -doctitle '$(@prefix@GROUP_ID):$(@prefix@ARTIFACT_ID) $(@prefix@VERSION) API'
-@prefix@JAVADOCX += -encoding 'UTF-8'
-@prefix@JAVADOCX += -use
-@prefix@JAVADOCX += -version
-@prefix@JAVADOCX += -windowtitle '$(@prefix@GROUP_ID):$(@prefix@ARTIFACT_ID) $(@prefix@VERSION) API'
+$(1)JAVADOCX += -bottom 'Copyright &\#169; $$($(1)COPYRIGHT_YEARS) <a href="https://www.objectos.com.br/">Objectos Software LTDA</a>. All rights reserved.'
+$(1)JAVADOCX += -charset 'UTF-8'
+$(1)JAVADOCX += -docencoding 'UTF-8'
+$(1)JAVADOCX += -doctitle '$$($(1)GROUP_ID):$$($(1)ARTIFACT_ID) $$($(1)VERSION) API'
+$(1)JAVADOCX += -encoding 'UTF-8'
+$(1)JAVADOCX += -use
+$(1)JAVADOCX += -version
+$(1)JAVADOCX += -windowtitle '$$($(1)GROUP_ID):$$($(1)ARTIFACT_ID) $$($(1)VERSION) API'
 
-## @name@ javadoc jar file
-@prefix@JAVADOC_JAR_FILE = $(@prefix@WORK)/$(@prefix@ARTIFACT_ID)-$(@prefix@VERSION)-javadoc.jar
+## javadoc jar file
+$(1)JAVADOC_JAR_FILE = $$($(1)WORK)/$$($(1)ARTIFACT_ID)-$$($(1)VERSION)-javadoc.jar
 
-## @name@ javadoc jar command
-@prefix@JAVADOC_JARX = $(JAR)
-@prefix@JAVADOC_JARX += --create
-@prefix@JAVADOC_JARX += --file $(@prefix@JAVADOC_JAR_FILE)
-@prefix@JAVADOC_JARX += -C $(@prefix@JAVADOC_OUTPUT)
-@prefix@JAVADOC_JARX += .
+## javadoc jar command
+$(1)JAVADOC_JARX = $$(JAR)
+$(1)JAVADOC_JARX += --create
+$(1)JAVADOC_JARX += --file $$($(1)JAVADOC_JAR_FILE)
+$(1)JAVADOC_JARX += -C $$($(1)JAVADOC_OUTPUT)
+$(1)JAVADOC_JARX += .
 
 #
-# @name@ javadoc targets
+# javadoc targets
 #
 
-$(@prefix@JAVADOC_JAR_FILE): $(@prefix@JAVADOC_MARKER)
-	$(@prefix@JAVADOC_JARX)
+$$($(1)JAVADOC_JAR_FILE): $$($(1)JAVADOC_MARKER)
+	$$($(1)JAVADOC_JARX)
 
-$(@prefix@JAVADOC_MARKER): $(@prefix@SOURCES)
-	$(@prefix@JAVADOCX)
+$$($(1)JAVADOC_MARKER): $$($(1)SOURCES)
+	$$($(1)JAVADOCX)
+
+endef

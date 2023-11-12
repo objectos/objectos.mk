@@ -21,30 +21,35 @@
 # 
 # Requirements:
 #
-# - you must provide the pom template $(MODULE)/pom.xml.tmpl
+# - you must provide the pom template $$(MODULE)/pom.xml.tmpl
 
-## @name@ pom source
-@prefix@POM_SOURCE = $(@prefix@MODULE)/pom.xml.tmpl
+define POM_TASK
 
-## @name@ pom file
-@prefix@POM_FILE = $(@prefix@WORK)/pom.xml
+## pom source
+$(1)POM_SOURCE = $$($(1)MODULE)/pom.xml.tmpl
 
-## @name@ pom external variables
-# @prefix@POM_VARIABLES = 
+## pom file
+$(1)POM_FILE = $$($(1)WORK)/pom.xml
 
-## @name@ ossrh pom sed command
-@prefix@POM_SEDX = $(SED)
-@prefix@POM_SEDX += $(foreach var,$(POM_VARIABLES),--expression='s/@$(var)@/$($(var))/g')
-@prefix@POM_SEDX += --expression='s/@COPYRIGHT_YEARS@/$(@prefix@COPYRIGHT_YEARS)/g'
-@prefix@POM_SEDX += --expression='s/@ARTIFACT_ID@/$(@prefix@ARTIFACT_ID)/g'
-@prefix@POM_SEDX += --expression='s/@GROUP_ID@/$(@prefix@GROUP_ID)/g'
-@prefix@POM_SEDX += --expression='s/@VERSION@/$(@prefix@VERSION)/g'
-@prefix@POM_SEDX += --expression='w $(@prefix@POM_FILE)'
-@prefix@POM_SEDX += $(@prefix@POM_SOURCE)
+## pom external variables
+# $(1)POM_VARIABLES = 
+
+## ossrh pom sed command
+$(1)POM_SEDX = $$(SED)
+$(1)POM_SEDX += $$(foreach var,$$(POM_VARIABLES),--expression='s/@$$(var)@/$$($$(var))/g')
+$(1)POM_SEDX += --expression='s/@COPYRIGHT_YEARS@/$$($(1)COPYRIGHT_YEARS)/g'
+$(1)POM_SEDX += --expression='s/@ARTIFACT_ID@/$$($(1)ARTIFACT_ID)/g'
+$(1)POM_SEDX += --expression='s/@GROUP_ID@/$$($(1)GROUP_ID)/g'
+$(1)POM_SEDX += --expression='s/@VERSION@/$$($(1)VERSION)/g'
+$(1)POM_SEDX += --expression='s/@DESCRIPTION@/$$($(1)DESCRIPTION)/g'
+$(1)POM_SEDX += --expression='w $$($(1)POM_FILE)'
+$(1)POM_SEDX += $$($(1)POM_SOURCE)
 
 #
 # Targets
 #
 
-$(@prefix@POM_FILE): $(@prefix@POM_SOURCE) Makefile
-	$(@prefix@POM_SEDX)
+$$($(1)POM_FILE): $$($(1)POM_SOURCE) Makefile
+	$$($(1)POM_SEDX)
+
+endef
