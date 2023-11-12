@@ -15,23 +15,26 @@
 #
 
 #
-# @name@ source-jar options
+# source-jar task
 #
 
-## @name@ source-jar file
-@prefix@SOURCE_JAR_FILE = $(@prefix@WORK)/$(@prefix@JAR_NAME)-$(@prefix@VERSION)-sources.jar
+define SOURCE_JAR_TASK
 
-## @name@ source-jar command
-@prefix@SOURCE_JARX = $(JAR)
-@prefix@SOURCE_JARX += --create
-@prefix@SOURCE_JARX += --file $(@prefix@SOURCE_JAR_FILE)
-@prefix@SOURCE_JARX += -C $(@prefix@MAIN)
-@prefix@SOURCE_JARX += .
+## source-jar file
+$(1)SOURCE_JAR_FILE = $$($(1)WORK)/$$($(1)JAR_NAME)-$$($(1)VERSION)-sources.jar
+
+## source-jar command
+$(1)SOURCE_JARX = $$(JAR)
+$(1)SOURCE_JARX += --create
+$(1)SOURCE_JARX += --file $$($(1)SOURCE_JAR_FILE)
+$(1)SOURCE_JARX += -C $$($(1)MAIN)
+$(1)SOURCE_JARX += .
 
 #
-# @name@ source-jar targets
+# source-jar targets
 #
 
-$(@prefix@SOURCE_JAR_FILE): $(@prefix@SOURCES)
-	$(@prefix@SOURCE_JARX)
+$$($(1)SOURCE_JAR_FILE): $$($(1)SOURCES)
+	$$($(1)SOURCE_JARX)
 	
+endef

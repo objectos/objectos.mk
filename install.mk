@@ -15,7 +15,7 @@
 #
 
 #
-# install options
+# install task
 #
 
 define INSTALL_TASK
