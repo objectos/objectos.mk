@@ -15,44 +15,48 @@
 #
 
 #
-# @name@ test execution options
+# test execution options
 #
 
-## @name@ test runtime dependencies
-# @prefix@TEST_RUNTIME_DEPS =
+define TEST_RUN_TASK
 
-## @name@ test main class
-ifndef @prefix@TEST_MAIN
-@prefix@TEST_MAIN = $(@prefix@MODULE).RunTests
+## test runtime dependencies
+# $(1)TEST_RUNTIME_DEPS =
+
+## test main class
+ifndef $(1)TEST_MAIN
+$(1)TEST_MAIN = $$($(1)MODULE).RunTests
 endif
 
-## @name@ test runtime output path
-@prefix@TEST_RUNTIME_OUTPUT = $(@prefix@WORK)/test-output
+## test runtime output path
+$(1)TEST_RUNTIME_OUTPUT = $$($(1)WORK)/test-output
 
-## @name@ test java command
-@prefix@TEST_JAVAX = $(JAVA)
-@prefix@TEST_JAVAX += --module-path $(call module-path,$(@prefix@TEST_RUNTIME_DEPS))
-@prefix@TEST_JAVAX += --add-modules org.testng
-@prefix@TEST_JAVAX += --add-reads $(@prefix@MODULE)=org.testng
-ifdef @prefix@TEST_JAVAX_READS
-@prefix@TEST_JAVAX += $(foreach mod,$(@prefix@TEST_JAVAX_READS),--add-reads $(@prefix@MODULE)=$(mod))
+## test java command
+$(1)TEST_JAVAX = $$(JAVA)
+$(1)TEST_JAVAX += --module-path $$(call module-path,$$($(1)TEST_RUNTIME_DEPS))
+$(1)TEST_JAVAX += --add-modules org.testng
+$(1)TEST_JAVAX += --add-reads $$($(1)MODULE)=org.testng
+ifdef $(1)TEST_JAVAX_READS
+$(1)TEST_JAVAX += $$(foreach mod,$$($(1)TEST_JAVAX_READS),--add-reads $$($(1)MODULE)=$$(mod))
 endif
-ifdef @prefix@TEST_JAVAX_EXPORTS
-@prefix@TEST_JAVAX += $(foreach pkg,$(@prefix@TEST_JAVAX_EXPORTS),--add-exports $(@prefix@MODULE)/$(pkg)=org.testng)
+ifdef $(1)TEST_JAVAX_EXPORTS
+$(1)TEST_JAVAX += $$(foreach pkg,$$($(1)TEST_JAVAX_EXPORTS),--add-exports $$($(1)MODULE)/$$(pkg)=org.testng)
 endif
-ifeq ($(@prefix@ENABLE_PREVIEW),1)
-@prefix@TEST_JAVAX += --enable-preview
+ifeq ($$($(1)ENABLE_PREVIEW),1)
+$(1)TEST_JAVAX += --enable-preview
 endif
-@prefix@TEST_JAVAX += --patch-module $(@prefix@MODULE)=$(@prefix@TEST_CLASS_OUTPUT)
-@prefix@TEST_JAVAX += --module $(@prefix@MODULE)/$(@prefix@TEST_MAIN)
-@prefix@TEST_JAVAX += $(@prefix@TEST_RUNTIME_OUTPUT)
+$(1)TEST_JAVAX += --patch-module $$($(1)MODULE)=$$($(1)TEST_CLASS_OUTPUT)
+$(1)TEST_JAVAX += --module $$($(1)MODULE)/$$($(1)TEST_MAIN)
+$(1)TEST_JAVAX += $$($(1)TEST_RUNTIME_OUTPUT)
 
-## @name@ test execution marker
-@prefix@TEST_RUN_MARKER = $(@prefix@TEST_RUNTIME_OUTPUT)/index.html
+## test execution marker
+$(1)TEST_RUN_MARKER = $$($(1)TEST_RUNTIME_OUTPUT)/index.html
 
 #
-# @name@ test execution targets
+# test execution targets
 #
 
-$(@prefix@TEST_RUN_MARKER): $(@prefix@TEST_COMPILE_MARKER) 
-	$(@prefix@TEST_JAVAX)
+$$($(1)TEST_RUN_MARKER): $$($(1)TEST_COMPILE_MARKER) 
+	$$($(1)TEST_JAVAX)
+
+endef

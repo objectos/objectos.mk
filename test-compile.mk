@@ -15,51 +15,55 @@
 #
 
 #
-# @name@ test compilation options
+# test compilation options
 #
 
-## @name@ test source directory
-@prefix@TEST = $(@prefix@MODULE)/test
+define TEST_COMPILE_TASK
 
-## @name@ test source files 
-@prefix@TEST_SOURCES = $(shell find ${@prefix@TEST} -type f -name '*.java' -print)
+## test source directory
+$(1)TEST = $$($(1)MODULE)/test
 
-## @name@ test source files modified since last compilation
-@prefix@TEST_DIRTY :=
+## test source files 
+$(1)TEST_SOURCES = $$(shell find $${$(1)TEST} -type f -name '*.java' -print)
 
-## @name@ test class output path
-@prefix@TEST_CLASS_OUTPUT = $(@prefix@WORK)/test
+## test source files modified since last compilation
+$(1)TEST_DIRTY :=
 
-## @name@ test compiled classes
-@prefix@TEST_CLASSES = $(@prefix@TEST_SOURCES:$(@prefix@TEST)/%.java=$(@prefix@TEST_CLASS_OUTPUT)/%.class)
+## test class output path
+$(1)TEST_CLASS_OUTPUT = $$($(1)WORK)/test
 
-## @name@ test compile-time dependencies
-# @prefix@TEST_COMPILE_DEPS =
+## test compiled classes
+$(1)TEST_CLASSES = $$($(1)TEST_SOURCES:$$($(1)TEST)/%.java=$$($(1)TEST_CLASS_OUTPUT)/%.class)
 
-## @name@ test javac command
-@prefix@TEST_JAVACX = $(JAVAC)
-@prefix@TEST_JAVACX += -d $(@prefix@TEST_CLASS_OUTPUT)
-@prefix@TEST_JAVACX += -g
-@prefix@TEST_JAVACX += -Xlint:all
-@prefix@TEST_JAVACX += --class-path $(call class-path,$(@prefix@TEST_COMPILE_DEPS))
-ifeq ($(@prefix@ENABLE_PREVIEW),1)
-@prefix@TEST_JAVACX += --enable-preview
+## test compile-time dependencies
+# $(1)TEST_COMPILE_DEPS =
+
+## test javac command
+$(1)TEST_JAVACX = $$(JAVAC)
+$(1)TEST_JAVACX += -d $$($(1)TEST_CLASS_OUTPUT)
+$(1)TEST_JAVACX += -g
+$(1)TEST_JAVACX += -Xlint:all
+$(1)TEST_JAVACX += --class-path $$(call class-path,$$($(1)TEST_COMPILE_DEPS))
+ifeq ($$($(1)ENABLE_PREVIEW),1)
+$(1)TEST_JAVACX += --enable-preview
 endif
-@prefix@TEST_JAVACX += --release $(@prefix@JAVA_RELEASE)
-@prefix@TEST_JAVACX += $(@prefix@TEST_DIRTY)
+$(1)TEST_JAVACX += --release $$($(1)JAVA_RELEASE)
+$(1)TEST_JAVACX += $$($(1)TEST_DIRTY)
 
-## @name@ test compilation marker
-@prefix@TEST_COMPILE_MARKER = $(@prefix@WORK)/test-compile-marker
+## test compilation marker
+$(1)TEST_COMPILE_MARKER = $$($(1)WORK)/test-compile-marker
 
 #
-# @name@ test compilation targets
+# test compilation targets
 #
 
-$(@prefix@TEST_COMPILE_MARKER): $(@prefix@TEST_COMPILE_DEPS) $(@prefix@TEST_CLASSES) 
-	if [ -n "$(@prefix@TEST_DIRTY)" ]; then \
-		$(@prefix@TEST_JAVACX); \
+$$($(1)TEST_COMPILE_MARKER): $$($(1)TEST_COMPILE_DEPS) $$($(1)TEST_CLASSES) 
+	if [ -n "$$($(1)TEST_DIRTY)" ]; then \
+		$$($(1)TEST_JAVACX); \
 	fi
-	touch $@
+	touch $$@
 
-$(@prefix@TEST_CLASSES): $(@prefix@TEST_CLASS_OUTPUT)/%.class: $(@prefix@TEST)/%.java
-	$(eval @prefix@TEST_DIRTY += $$<)
+$$($(1)TEST_CLASSES): $$($(1)TEST_CLASS_OUTPUT)/%.class: $$($(1)TEST)/%.java
+	$$(eval $(1)TEST_DIRTY += $$$$<)
+
+endef
