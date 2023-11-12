@@ -15,16 +15,20 @@
 #
 
 #
-# @name@ install options
+# install options
 #
 
-## @name@ install location
-@prefix@INSTALL = $(call dependency,$(@prefix@GROUP_ID),$(@prefix@ARTIFACT_ID),$(@prefix@VERSION))
+define INSTALL_TASK
+
+## install location
+$(1)INSTALL = $$(call dependency,$$($(1)GROUP_ID),$$($(1)ARTIFACT_ID),$$($(1)VERSION))
 
 #
-# @name@ install target
+# install target
 #
 
-$(@prefix@INSTALL): $(@prefix@JAR_FILE)
-	mkdir --parents $(@D)
-	cp $< $@
+$$($(1)INSTALL): $$($(1)JAR_FILE)
+	mkdir --parents $$(@D)
+	cp $$< $$@
+
+endef
