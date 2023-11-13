@@ -29,7 +29,7 @@ define POM_TASK
 $(1)POM_SOURCE = $$($(1)MODULE)/pom.xml.tmpl
 
 ## pom file
-$(1)POM_FILE = $$($(1)WORK)/pom.xml
+$(1)POM_FILE = $$($(1)WORK)/$$($(1)JAR_NAME)-$$($(1)VERSION).pom
 
 ## pom external variables
 # $(1)POM_VARIABLES = 

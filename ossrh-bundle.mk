@@ -14,41 +14,25 @@
 # limitations under the License.
 #
 
-## @name@ gpg command
-@prefix@GPGX = $(GPG)
-@prefix@GPGX += --armor
-@prefix@GPGX += --batch
-@prefix@GPGX += --default-key $(OSSRH_GPG_KEY)
-@prefix@GPGX += --detach-sign
-@prefix@GPGX += --passphrase $(OSSRH_GPG_PASSPHRASE)
-@prefix@GPGX += --pinentry-mode loopback
-@prefix@GPGX += --yes
+define OSSRH_BUNDLE_TASK
 
-## @name@ ossrh bundle jar file
-@prefix@OSSRH_BUNDLE = $(@prefix@WORK)/$(@prefix@ARTIFACT_ID)-$(@prefix@VERSION)-bundle.jar
+## ossrh bundle jar file
+$(1)OSSRH_BUNDLE = $$($(1)WORK)/$$($(1)ARTIFACT_ID)-$$($(1)VERSION)-bundle.jar
 
-## @name@ ossrh bundle contents
-@prefix@OSSRH_CONTENTS = $(@prefix@POM_FILE)
-@prefix@OSSRH_CONTENTS += $(@prefix@JAR_FILE)
-@prefix@OSSRH_CONTENTS += $(@prefix@SOURCE_JAR_FILE)
-@prefix@OSSRH_CONTENTS += $(@prefix@JAVADOC_JAR_FILE)
+## ossrh bundle contents
+#$(1)OSSRH_BUNDLE_CONTENTS =
 
-## @name@ ossrh sigs
-@prefix@OSSRH_SIGS = $(@prefix@OSSRH_CONTENTS:%=%.asc)
-
-## @name@ ossrh bundle jar command
-@prefix@OSSRH_JARX = $(JAR)
-@prefix@OSSRH_JARX += --create
-@prefix@OSSRH_JARX += --file $(@prefix@OSSRH_BUNDLE)
-@prefix@OSSRH_JARX += $(@prefix@OSSRH_CONTENTS:$(@prefix@WORK)/%=-C $(@prefix@WORK) %)
-@prefix@OSSRH_JARX += $(@prefix@OSSRH_SIGS:$(@prefix@WORK)/%=-C $(@prefix@WORK) %)
+## ossrh bundle jar command
+$(1)OSSRH_JARX = $$(JAR)
+$(1)OSSRH_JARX += --create
+$(1)OSSRH_JARX += --file $$($(1)OSSRH_BUNDLE)
+$(1)OSSRH_JARX += $$(foreach file,$$($(1)OSSRH_BUNDLE_CONTENTS), -C $$(dir $$(file)) $$(notdir $$(file)))
 
 #
-# @name@ ossrh bundle targets
+# ossrh bundle targets
 #
 
-$(@prefix@OSSRH_BUNDLE): $(@prefix@OSSRH_SIGS)
-	$(@prefix@OSSRH_JARX)
+$$($(1)OSSRH_BUNDLE): $$($(1)OSSRH_BUNDLE_CONTENTS)
+	$$($(1)OSSRH_JARX)
 
-%.asc: %
-	@$(@prefix@GPGX) $<
+endef
