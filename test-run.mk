@@ -34,7 +34,11 @@ $(1)TEST_RUNTIME_OUTPUT = $$($(1)WORK)/test-output
 ## test java command
 $(1)TEST_JAVAX = $$(JAVA)
 $(1)TEST_JAVAX += --module-path $$(call module-path,$$($(1)TEST_RUNTIME_DEPS))
+ifdef $(1)TEST_JAVAX_MODULES
+$(1)TEST_JAVAX += $$(foreach mod,$$($(1)TEST_JAVAX_MODULES),--add-modules $$(mod))
+else
 $(1)TEST_JAVAX += --add-modules org.testng
+endif
 $(1)TEST_JAVAX += --add-reads $$($(1)MODULE)=org.testng
 ifdef $(1)TEST_JAVAX_READS
 $(1)TEST_JAVAX += $$(foreach mod,$$($(1)TEST_JAVAX_READS),--add-reads $$($(1)MODULE)=$$(mod))
