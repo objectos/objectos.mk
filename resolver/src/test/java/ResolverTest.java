@@ -29,6 +29,8 @@ public class ResolverTest {
 
 	private static final String TESTNG_7_7_1 = "org.testng:testng:7.7.1";
 
+	private static final String TEST_1_0_0 = "com.example:test:1.0.0";
+
 	@Test
 	public void resolveTestNg771() throws Exception {
 		Path repository;
@@ -59,6 +61,83 @@ public class ResolverTest {
 					Path.of("org", "slf4j", "slf4j-api", "1.7.36", "slf4j-api-1.7.36.jar"),
 					Path.of("com", "beust", "jcommander", "1.82", "jcommander-1.82.jar"),
 					Path.of("org", "webjars", "jquery", "3.6.1", "jquery-3.6.1.jar")
+			);
+
+			assertEquals(
+					result,
+
+					paths.stream()
+							.map(repository::resolve)
+							.map(Path::toString)
+							.toList()
+			);
+		} finally {
+			rmdir(repository);
+		}
+	}
+
+	@Test
+	public void resolveLocal() throws Exception {
+		Path repository;
+		repository = Files.createTempDirectory("resolver-test-");
+
+		try {
+			Resolver resolver;
+			resolver = new Resolver();
+
+			String[] args;
+			args = new String[] {
+					"--local-repo",
+					repository.toString(),
+					TEST_1_0_0
+			};
+
+			resolver.parseArgs(args);
+
+			Path testPom;
+			testPom = repository.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.pom"));
+
+			Files.createDirectories(testPom.getParent());
+
+			Files.writeString(
+					testPom,
+
+					"""
+					<project>
+
+						<modelVersion>4.0.0</modelVersion>
+
+						<groupId>com.example</groupId>
+						<artifactId>test</artifactId>
+						<version>1.0.0</version>
+
+						<dependencies>
+							<dependency>
+								<groupId>org.slf4j</groupId>
+								<artifactId>slf4j-api</artifactId>
+								<version>1.7.36</version>
+							</dependency>
+						</dependencies>
+
+					</project>
+					"""
+			);
+
+			Path testJar;
+			testJar = repository.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.jar"));
+
+			Files.writeString(testJar, "dummy");
+
+			assertEquals(resolver.localRepositoryPath, repository);
+			assertEquals(resolver.requestedCoordinates, List.of(TEST_1_0_0));
+
+			List<String> result;
+			result = resolver.resolve();
+
+			List<Path> paths;
+			paths = List.of(
+					testJar,
+					Path.of("org", "slf4j", "slf4j-api", "1.7.36", "slf4j-api-1.7.36.jar")
 			);
 
 			assertEquals(
