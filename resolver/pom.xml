@@ -26,7 +26,7 @@
 	<name>br.com.objectos:objectos.mk</name>
 
 	<description>
-	Fake pom for resolving deps
+	Maven dependency resolver 
 	</description>
 
 	<url>https://www.objectos.com.br/</url>

@@ -18,6 +18,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.AbstractRepositoryListener;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -53,10 +54,24 @@ public class Resolver {
 	Resolver() {}
 
 	public static void main(String[] args) {
-		Resolver resolver;
-		resolver = new Resolver();
+		try {
+			Resolver resolver;
+			resolver = new Resolver();
 
-		resolver.parseArgs(args);
+			resolver.parseArgs(args);
+
+			List<String> result;
+			result = resolver.resolve();
+
+			String spaceSeparated;
+			spaceSeparated = result.stream().collect(Collectors.joining(" "));
+
+			System.out.println(spaceSeparated);
+		} catch (DependencyResolutionException e) {
+			e.printStackTrace();
+
+			System.exit(1);
+		}
 	}
 
 	final void parseArgs(String[] args) {
