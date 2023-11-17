@@ -14,10 +14,36 @@
  * limitations under the License.
  */
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.AbstractRepositoryListener;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositoryEvent;
+import org.eclipse.aether.RepositoryListener;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transport.file.FileTransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.util.artifact.JavaScopes;
 
+@SuppressWarnings("deprecation")
 public class Resolver {
 
 	Path localRepositoryPath;
@@ -57,6 +83,128 @@ public class Resolver {
 				default -> requestedCoordinates.add(arg);
 			}
 		}
+
+		if (localRepositoryPath == null) {
+			throw new UnsupportedOperationException("Implement me");
+		}
+
+		if (requestedCoordinates.isEmpty()) {
+			throw new UnsupportedOperationException("Implement me");
+		}
+	}
+
+	final List<String> resolve() throws DependencyResolutionException {
+		// RepositorySystem
+
+		DefaultServiceLocator serviceLocator;
+		serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
+
+		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+
+		serviceLocator.addService(TransporterFactory.class, FileTransporterFactory.class);
+
+		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+
+		RepositorySystem repositorySystem;
+		repositorySystem = serviceLocator.getService(RepositorySystem.class);
+
+		// RepositorySystemSession
+
+		DefaultRepositorySystemSession session;
+		session = MavenRepositorySystemUtils.newSession();
+
+		File localRepositoryFile;
+		localRepositoryFile = localRepositoryPath.toFile();
+
+		LocalRepository localRepository;
+		localRepository = new LocalRepository(localRepositoryFile);
+
+		LocalRepositoryManager localRepositoryManager;
+		localRepositoryManager = repositorySystem.newLocalRepositoryManager(session, localRepository);
+
+		session.setLocalRepositoryManager(localRepositoryManager);
+
+		RepositoryListener repositoryListener;
+		repositoryListener = new ThisRepositoryListener();
+
+		session.setRepositoryListener(repositoryListener);
+
+		// CollectRequest
+
+		CollectRequest collectRequest;
+		collectRequest = new CollectRequest();
+
+		List<Dependency> dependencies;
+		dependencies = createDependencies();
+
+		collectRequest.setDependencies(dependencies);
+
+		RemoteRepository central;
+		central = new RemoteRepository.Builder("central", "default", "https://repo1.maven.org/maven2/").build();
+
+		List<RemoteRepository> repositories;
+		repositories = List.of(central);
+
+		collectRequest.setRepositories(repositories);
+
+		// DependencyRequest
+
+		DependencyRequest dependencyRequest;
+		dependencyRequest = new DependencyRequest(collectRequest, null);
+
+		DependencyResult dependencyResult;
+		dependencyResult = repositorySystem.resolveDependencies(session, dependencyRequest);
+
+		List<ArtifactResult> artifacts;
+		artifacts = dependencyResult.getArtifactResults();
+
+		return artifacts.stream()
+				.map(ArtifactResult::getArtifact)
+				.map(Artifact::getFile)
+				.map(File::getAbsolutePath)
+				.toList();
+	}
+
+	private List<Dependency> createDependencies() {
+		int size;
+		size = requestedCoordinates.size();
+
+		List<Dependency> result;
+		result = new ArrayList<>(size);
+
+		for (int i = 0; i < size; i++) {
+			String coordinate;
+			coordinate = requestedCoordinates.get(i);
+
+			Artifact artifact;
+			artifact = new DefaultArtifact(coordinate);
+
+			String scope;
+			scope = JavaScopes.COMPILE;
+
+			Dependency dependency;
+			dependency = new Dependency(artifact, scope);
+
+			result.add(dependency);
+		}
+
+		return result;
+	}
+
+}
+
+final class ThisRepositoryListener extends AbstractRepositoryListener {
+
+	@Override
+	public final void artifactDownloading(RepositoryEvent event) {
+		Artifact artifact;
+		artifact = event.getArtifact();
+
+		log("Downloading", artifact);
+	}
+
+	private void log(String action, Artifact artifact) {
+		System.out.println(action + " " + artifact);
 	}
 
 }

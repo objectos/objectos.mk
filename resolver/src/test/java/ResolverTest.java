@@ -30,7 +30,7 @@ public class ResolverTest {
 	private static final String TESTNG_7_7_1 = "org.testng:testng:7.7.1";
 
 	@Test
-	public void resolveTestNg771() throws IOException {
+	public void resolveTestNg771() throws Exception {
 		Path repository;
 		repository = Files.createTempDirectory("resolver-test-");
 
@@ -49,6 +49,26 @@ public class ResolverTest {
 
 			assertEquals(resolver.localRepositoryPath, repository);
 			assertEquals(resolver.requestedCoordinates, List.of(TESTNG_7_7_1));
+
+			List<String> result;
+			result = resolver.resolve();
+
+			List<Path> paths;
+			paths = List.of(
+					Path.of("org", "testng", "testng", "7.7.1", "testng-7.7.1.jar"),
+					Path.of("org", "slf4j", "slf4j-api", "1.7.36", "slf4j-api-1.7.36.jar"),
+					Path.of("com", "beust", "jcommander", "1.82", "jcommander-1.82.jar"),
+					Path.of("org", "webjars", "jquery", "3.6.1", "jquery-3.6.1.jar")
+			);
+
+			assertEquals(
+					result,
+
+					paths.stream()
+							.map(repository::resolve)
+							.map(Path::toString)
+							.toList()
+			);
 		} finally {
 			rmdir(repository);
 		}
