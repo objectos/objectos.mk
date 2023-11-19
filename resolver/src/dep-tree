@@ -1,0 +1,24 @@
+br.com.objectos:objectos.mk:jar:0.1-SNAPSHOT
+   org.apache.maven.resolver:maven-resolver-impl:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-api:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-spi:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-named-locks:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-util:jar:1.9.16:compile
+      org.slf4j:slf4j-api:jar:1.7.36:compile
+   org.apache.maven.resolver:maven-resolver-supplier:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-connector-basic:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-transport-file:jar:1.9.16:compile
+      org.apache.maven.resolver:maven-resolver-transport-http:jar:1.9.16:compile
+         org.apache.httpcomponents:httpclient:jar:4.5.14:compile
+         org.apache.httpcomponents:httpcore:jar:4.4.16:compile
+         commons-codec:commons-codec:jar:1.16.0:runtime
+         org.slf4j:jcl-over-slf4j:jar:1.7.36:runtime
+      org.apache.maven:maven-resolver-provider:jar:3.9.4:compile
+         org.apache.maven:maven-model:jar:3.9.4:compile
+         org.apache.maven:maven-repository-metadata:jar:3.9.4:compile
+         org.codehaus.plexus:plexus-utils:jar:3.5.1:compile
+      org.apache.maven:maven-model-builder:jar:3.9.4:compile
+         org.codehaus.plexus:plexus-interpolation:jar:1.26:compile
+         org.apache.maven:maven-artifact:jar:3.9.4:compile
+            org.apache.commons:commons-lang3:jar:3.12.0:compile
+         org.apache.maven:maven-builder-support:jar:3.9.4:compile

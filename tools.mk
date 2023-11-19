@@ -38,6 +38,9 @@ JAR := $(JAVA_HOME_BIN)/jar
 ## javadoc command
 JAVADOC := $(JAVA_HOME_BIN)/javadoc
 
+## cat common options
+CAT := cat
+
 ## curl common options
 CURL := curl
 CURL += --fail

@@ -16,17 +16,19 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>br.com.objectos</groupId>
 	<artifactId>objectos.mk</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<name>br.com.objectos:objectos.mk</name>
 
 	<description>
-	Maven dependency resolver 
+		Maven dependency resolver
 	</description>
 
 	<url>https://www.objectos.com.br/</url>
@@ -43,7 +45,8 @@
 
 	<scm>
 		<connection>scm:git:git://github.com/objectos/objectos.mk.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/objectos/objectos.mk.git</developerConnection>
+		<developerConnection>
+			scm:git:ssh://git@github.com/objectos/objectos.mk.git</developerConnection>
 		<url>https://github.com/objectos/objectos.way</url>
 		<tag>HEAD</tag>
 	</scm>
@@ -62,33 +65,41 @@
 			<organizationUrl>https://www.objectos.com.br/</organizationUrl>
 		</developer>
 	</developers>
-	
+
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
-		<maven.version>3.8.6</maven.version>
-		<resolver.version>1.8.2</resolver.version>
+		<resolver.version>1.9.16</resolver.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<testng.version>7.7.1</testng.version>
 	</properties>
-	
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>dep-tree</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>tree</goal>
+						</goals>
+						<configuration>
+							<outputFile>${project.basedir}/src/dep-tree</outputFile>
+							<scope>runtime</scope>
+							<tokens>whitespace</tokens>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-resolver-provider</artifactId>
-			<version>${maven.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.maven.resolver</groupId>
-			<artifactId>maven-resolver-api</artifactId>
-			<version>${resolver.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.resolver</groupId>
-			<artifactId>maven-resolver-spi</artifactId>
-			<version>${resolver.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.resolver</groupId>
 			<artifactId>maven-resolver-impl</artifactId>
@@ -96,31 +107,21 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.resolver</groupId>
-			<artifactId>maven-resolver-connector-basic</artifactId>
+			<artifactId>maven-resolver-supplier</artifactId>
 			<version>${resolver.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.resolver</groupId>
-			<artifactId>maven-resolver-transport-file</artifactId>
-			<version>${resolver.version}</version>
-		</dependency>		
-		<dependency>
-			<groupId>org.apache.maven.resolver</groupId>
-			<artifactId>maven-resolver-transport-http</artifactId>
-			<version>${resolver.version}</version>
-		</dependency>		
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-nop</artifactId>
 			<version>${slf4j.version}</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 	</dependencies>
-	
+
 </project>

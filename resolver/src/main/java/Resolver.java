@@ -25,12 +25,11 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositoryEvent;
 import org.eclipse.aether.RepositoryListener;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -38,16 +37,14 @@ import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.transport.file.FileTransporterFactory;
-import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.supplier.RepositorySystemSupplier;
 import org.eclipse.aether.util.artifact.JavaScopes;
 
-@SuppressWarnings("deprecation")
 public class Resolver {
 
 	Path localRepositoryPath;
+
+	Artifact requestedArtifact;
 
 	List<String> requestedCoordinates = new ArrayList<>();
 
@@ -111,38 +108,13 @@ public class Resolver {
 	final List<String> resolve() throws DependencyResolutionException {
 		// RepositorySystem
 
-		DefaultServiceLocator serviceLocator;
-		serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
-
-		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-
-		serviceLocator.addService(TransporterFactory.class, FileTransporterFactory.class);
-
-		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-
 		RepositorySystem repositorySystem;
-		repositorySystem = serviceLocator.getService(RepositorySystem.class);
+		repositorySystem = newRepositorySystem();
 
 		// RepositorySystemSession
 
-		DefaultRepositorySystemSession session;
-		session = MavenRepositorySystemUtils.newSession();
-
-		File localRepositoryFile;
-		localRepositoryFile = localRepositoryPath.toFile();
-
-		LocalRepository localRepository;
-		localRepository = new LocalRepository(localRepositoryFile);
-
-		LocalRepositoryManager localRepositoryManager;
-		localRepositoryManager = repositorySystem.newLocalRepositoryManager(session, localRepository);
-
-		session.setLocalRepositoryManager(localRepositoryManager);
-
-		RepositoryListener repositoryListener;
-		repositoryListener = new ThisRepositoryListener();
-
-		session.setRepositoryListener(repositoryListener);
+		RepositorySystemSession session;
+		session = newRepositorySystemSession(repositorySystem);
 
 		// CollectRequest
 
@@ -155,7 +127,7 @@ public class Resolver {
 		collectRequest.setDependencies(dependencies);
 
 		RemoteRepository central;
-		central = new RemoteRepository.Builder("central", "default", "https://repo1.maven.org/maven2/").build();
+		central = new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2/").build();
 
 		List<RemoteRepository> repositories;
 		repositories = List.of(central);
@@ -178,6 +150,36 @@ public class Resolver {
 				.map(Artifact::getFile)
 				.map(File::getAbsolutePath)
 				.toList();
+	}
+
+	private RepositorySystem newRepositorySystem() {
+		RepositorySystemSupplier repositorySystemSupplier;
+		repositorySystemSupplier = new RepositorySystemSupplier();
+
+		return repositorySystemSupplier.get();
+	}
+
+	private RepositorySystemSession newRepositorySystemSession(RepositorySystem repositorySystem) {
+		DefaultRepositorySystemSession session;
+		session = MavenRepositorySystemUtils.newSession();
+
+		File localRepositoryFile;
+		localRepositoryFile = localRepositoryPath.toFile();
+
+		LocalRepository localRepository;
+		localRepository = new LocalRepository(localRepositoryFile);
+
+		LocalRepositoryManager localRepositoryManager;
+		localRepositoryManager = repositorySystem.newLocalRepositoryManager(session, localRepository);
+
+		session.setLocalRepositoryManager(localRepositoryManager);
+
+		RepositoryListener repositoryListener;
+		repositoryListener = new ThisRepositoryListener();
+
+		session.setRepositoryListener(repositoryListener);
+
+		return session;
 	}
 
 	private List<Dependency> createDependencies() {
