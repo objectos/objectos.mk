@@ -46,7 +46,7 @@ include resolver.mk
 DEPS  = org.testng:testng:7.7.1
 DEPS += org.slf4j:slf4j-nop:1.7.36
 
-DEPS_MODULE_PATH = $(shell $(RESOLVEX) $(DEPS))
+DEPS_MODULE_PATH = $(call module-path,$(shell $(RESOLVEX) $(DEPS)))
 
 .PHONY: resolver-test
 resolver-test: $(RESOLVER_DEPS_JARS)

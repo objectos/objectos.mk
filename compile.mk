@@ -29,9 +29,6 @@ $(1)SOURCES = $$(shell find $${$(1)MAIN} -type f -name '*.java' -print)
 ## source files modified since last compilation
 $(1)DIRTY :=
 
-## work dir
-$(1)WORK = $$($(1)MODULE)/work
-
 ## class output path
 $(1)CLASS_OUTPUT = $$($(1)WORK)/main
 

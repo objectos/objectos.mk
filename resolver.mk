@@ -87,17 +87,6 @@ RESOLVEX += --class-path $(call class-path,$(RESOLVER_DEPS_JARS))
 RESOLVEX += $(RESOLVER_JAVA)
 RESOLVEX += --local-repo $(LOCAL_REPO_PATH)
 
-## resolve function
-## 
-## syntax:
-## DEPS  = com.example:foo:1.2.3
-## DEPS += com.example:bar:2.3.4 
-## $(call resolve,$(DEPS))
-dot := .
-solidus := /
-
-resolve = $(shell echo "$${RESOLVER_JAVA}" > /tmp/Resolver.java; )
-
 ## dependency function
 ## 
 ## syntax:
@@ -124,9 +113,9 @@ class-path = $(subst $(space),$(CLASS_PATH_SEPARATOR),$(1))
 ## module-path function
 ##
 ## syntax:
-## DEPS  = com.example:foo:1.2.3
-## DEPS += com.example:bar:2.3.4 
-## $(call module-path,$(DEPS))
+## $(call module-path,[list of deps])
 MODULE_PATH_SEPARATOR := :
 
-module-path = $(call to-deps,$(1))
+mk-module-path = $(subst $(space),$(MODULE_PATH_SEPARATOR),$(1))
+
+module-path = $(call mk-module-path,$(shell $(RESOLVEX) $(DEPS)))
