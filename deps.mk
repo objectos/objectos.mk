@@ -32,8 +32,11 @@ REMOTE_REPO_CURLX += --create-dirs
 ## 
 ## syntax:
 ## $(call dependency,[GROUP_ID],[ARTIFACT_ID],[VERSION])
+colon := :
 dot := .
 solidus := /
+
+mk-dependency = $(subst $(dot),$(solidus),$(1))/$(2)/$(3)/$(2)-$(3).jar
 
 dependency = $(LOCAL_REPO_PATH)/$(subst $(dot),$(solidus),$(1))/$(2)/$(3)/$(2)-$(3).jar
 
@@ -58,6 +61,30 @@ class-path = $(subst $(space),$(CLASS_PATH_SEPARATOR),$(1))
 MODULE_PATH_SEPARATOR := :
 
 module-path = $(subst $(space),$(MODULE_PATH_SEPARATOR),$(1))
+
+ifndef OBJECTOS_DIR
+$(error The variable OBJECTOS_DIR was not defined)
+endif
+
+## to-resolutions
+
+mk-resolution = $(OBJECTOS_DIR)/resolution/$(1)
+
+to-resolutions = $(foreach dep,$(1),$(call mk-resolution,$(dep)))
+
+## to-resolved-jar
+
+word-solidus = $(word $(2), $(subst $(solidus),$(space),$(1)))
+
+mk-resolved-jar = $(call mk-dependency,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3))
+
+to-resolved-jar = $(foreach dep,$(1),$(call to-resolutions,$(dep)))
+
+## to-jars
+
+to-jars-paths = $(foreach res,$(call to-resolutions,$(1)),$(file < $(res)))
+
+to-jars = $(foreach jar,$(call to-jars-paths,$(1)),$(LOCAL_REPO_PATH)/$(jar))
 
 #
 # Gets the dependency from the remote repository

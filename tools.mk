@@ -53,3 +53,6 @@ JQ := jq
 
 ## sed common options
 SED := sed
+
+## tr common options
+TR := tr
