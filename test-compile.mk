@@ -38,6 +38,15 @@ $(1)TEST_CLASSES = $$($(1)TEST_SOURCES:$$($(1)TEST)/%.java=$$($(1)TEST_CLASS_OUT
 ## test compile-time dependencies
 # $(1)TEST_COMPILE_DEPS =
 
+## test compile-time required resolutions
+$(1)TEST_COMPILE_RESOLUTIONS = $$(call to-resolutions,$$($(1)TEST_COMPILE_DEPS))
+
+## test compile-time required jars
+$(1)TEST_COMPILE_JARS = $$(call to-jars,$$($(1)TEST_COMPILE_DEPS))
+
+## test compile-time class-path
+$(1)TEST_COMPILE_CLASS_PATH = $$(call class-path,$$($(1)TEST_COMPILE_JARS))
+
 ## test javac command
 $(1)TEST_JAVACX = $$(JAVAC)
 $(1)TEST_JAVACX += -d $$($(1)TEST_CLASS_OUTPUT)
@@ -53,12 +62,23 @@ $(1)TEST_JAVACX += $$($(1)TEST_DIRTY)
 ## test compilation marker
 $(1)TEST_COMPILE_MARKER = $$($(1)WORK)/test-compile-marker
 
+## test compilation requirements
+$(1)TEST_COMPILE_REQS  = $$($(1)TEST_COMPILE_RESOLUTIONS)
+$(1)TEST_COMPILE_REQS += $$($(1)TEST_CLASSES)
+
 #
 # test compilation targets
 #
 
-$$($(1)TEST_COMPILE_MARKER): $$($(1)TEST_COMPILE_DEPS) $$($(1)TEST_CLASSES) 
+.PHONY: $(2)test-compile
+$(2)test-compile: $$($(1)TEST_COMPILE_MARKER)
+
+.PHONY: $(2)test-compile-jars
+$(2)test-compile-jars: $$($(1)TEST_COMPILE_JARS)
+
+$$($(1)TEST_COMPILE_MARKER): $$($(1)TEST_COMPILE_REQS) 
 	if [ -n "$$($(1)TEST_DIRTY)" ]; then \
+		$(MAKE) $(2)test-compile-jars; \
 		$$($(1)TEST_JAVACX); \
 	fi
 	touch $$@

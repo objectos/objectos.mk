@@ -46,8 +46,6 @@ public class Resolver {
 
 	Artifact requestedArtifact;
 
-	List<String> requestedCoordinates = new ArrayList<>();
-
 	Resolver() {}
 
 	public static void main(String[] args) {
@@ -60,10 +58,10 @@ public class Resolver {
 			List<String> result;
 			result = resolver.resolve();
 
-			String spaceSeparated;
-			spaceSeparated = result.stream().collect(Collectors.joining(" "));
+			String newLineSeparated;
+			newLineSeparated = result.stream().collect(Collectors.joining("\n", "", "\n"));
 
-			System.out.println(spaceSeparated);
+			System.out.println(newLineSeparated);
 		} catch (DependencyResolutionException e) {
 			e.printStackTrace();
 
@@ -77,6 +75,9 @@ public class Resolver {
 
 		int length;
 		length = args.length;
+
+		int requestedCount;
+		requestedCount = 0;
 
 		while (index < length) {
 			String arg;
@@ -92,16 +93,37 @@ public class Resolver {
 					}
 				}
 
-				default -> requestedCoordinates.add(arg);
+				default -> {
+					requestedCount++;
+
+					String gav;
+					gav = arg.replace('/', ':');
+
+					requestedArtifact = new DefaultArtifact(gav);
+				}
 			}
 		}
 
+		List<String> errors;
+		errors = new ArrayList<>();
+
 		if (localRepositoryPath == null) {
-			throw new UnsupportedOperationException("Implement me");
+			errors.add("[ERROR] missing required option --local-repo [dir]");
 		}
 
-		if (requestedCoordinates.isEmpty()) {
-			throw new UnsupportedOperationException("Implement me");
+		if (requestedCount == 0) {
+			errors.add("[ERROR] missing required option groupId/artifactId/version");
+		}
+
+		if (requestedCount > 1) {
+			errors.add("[ERROR] multiple artifacts requested. Resolving only one artifact is supported.");
+		}
+
+		if (!errors.isEmpty()) {
+			String msg;
+			msg = errors.stream().collect(Collectors.joining("\n"));
+
+			throw new IllegalArgumentException(msg);
 		}
 	}
 
@@ -148,7 +170,10 @@ public class Resolver {
 		return artifacts.stream()
 				.map(ArtifactResult::getArtifact)
 				.map(Artifact::getFile)
-				.map(File::getAbsolutePath)
+				.map(File::toPath)
+				.map(path -> localRepositoryPath.relativize(path))
+				.map(Path::toString)
+				.sorted()
 				.toList();
 	}
 
@@ -183,29 +208,13 @@ public class Resolver {
 	}
 
 	private List<Dependency> createDependencies() {
-		int size;
-		size = requestedCoordinates.size();
+		String scope;
+		scope = JavaScopes.COMPILE;
 
-		List<Dependency> result;
-		result = new ArrayList<>(size);
+		Dependency dependency;
+		dependency = new Dependency(requestedArtifact, scope);
 
-		for (int i = 0; i < size; i++) {
-			String coordinate;
-			coordinate = requestedCoordinates.get(i);
-
-			Artifact artifact;
-			artifact = new DefaultArtifact(coordinate);
-
-			String scope;
-			scope = JavaScopes.COMPILE;
-
-			Dependency dependency;
-			dependency = new Dependency(artifact, scope);
-
-			result.add(dependency);
-		}
-
-		return result;
+		return List.of(dependency);
 	}
 
 }

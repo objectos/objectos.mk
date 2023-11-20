@@ -23,13 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.testng.annotations.Test;
 
 public class ResolverTest {
-
-	private static final String TESTNG_7_7_1 = "org.testng:testng:7.7.1";
-
-	private static final String TEST_1_0_0 = "com.example:test:1.0.0";
 
 	@Test
 	public void resolveTestNg771() throws Exception {
@@ -44,32 +41,26 @@ public class ResolverTest {
 			args = new String[] {
 					"--local-repo",
 					repository.toString(),
-					TESTNG_7_7_1
+					"org.testng/testng/7.7.1"
 			};
 
 			resolver.parseArgs(args);
 
 			assertEquals(resolver.localRepositoryPath, repository);
-			assertEquals(resolver.requestedCoordinates, List.of(TESTNG_7_7_1));
+			assertEquals(resolver.requestedArtifact, new DefaultArtifact("org.testng:testng:7.7.1"));
 
 			List<String> result;
 			result = resolver.resolve();
 
-			List<Path> paths;
-			paths = List.of(
-					Path.of("org", "testng", "testng", "7.7.1", "testng-7.7.1.jar"),
-					Path.of("org", "slf4j", "slf4j-api", "1.7.36", "slf4j-api-1.7.36.jar"),
-					Path.of("com", "beust", "jcommander", "1.82", "jcommander-1.82.jar"),
-					Path.of("org", "webjars", "jquery", "3.6.1", "jquery-3.6.1.jar")
-			);
-
 			assertEquals(
 					result,
 
-					paths.stream()
-							.map(repository::resolve)
-							.map(Path::toString)
-							.toList()
+					List.of(
+							"com/beust/jcommander/1.82/jcommander-1.82.jar",
+							"org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
+							"org/testng/testng/7.7.1/testng-7.7.1.jar",
+							"org/webjars/jquery/3.6.1/jquery-3.6.1.jar"
+					)
 			);
 		} finally {
 			rmdir(repository);
@@ -89,7 +80,7 @@ public class ResolverTest {
 			args = new String[] {
 					"--local-repo",
 					repository.toString(),
-					TEST_1_0_0
+					"com.example/test/1.0.0"
 			};
 
 			resolver.parseArgs(args);
@@ -129,24 +120,18 @@ public class ResolverTest {
 			Files.writeString(testJar, "dummy");
 
 			assertEquals(resolver.localRepositoryPath, repository);
-			assertEquals(resolver.requestedCoordinates, List.of(TEST_1_0_0));
+			assertEquals(resolver.requestedArtifact, new DefaultArtifact("com.example:test:1.0.0"));
 
 			List<String> result;
 			result = resolver.resolve();
 
-			List<Path> paths;
-			paths = List.of(
-					testJar,
-					Path.of("org", "slf4j", "slf4j-api", "1.7.36", "slf4j-api-1.7.36.jar")
-			);
-
 			assertEquals(
 					result,
 
-					paths.stream()
-							.map(repository::resolve)
-							.map(Path::toString)
-							.toList()
+					List.of(
+							"com/example/test/1.0.0/test-1.0.0.jar",
+							"org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar"
+					)
 			);
 		} finally {
 			rmdir(repository);
