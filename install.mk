@@ -27,8 +27,15 @@ $(1)INSTALL = $$(call dependency,$$($(1)GROUP_ID),$$($(1)ARTIFACT_ID),$$($(1)VER
 # install target
 #
 
+.PHONY: $(2)install
+$(2)install: $$($(1)INSTALL)
+
+.PHONY: $(2)clean-install
+$(2)clean-install:
+	rm -f $$($(1)INSTALL)
+
 $$($(1)INSTALL): $$($(1)JAR_FILE)
 	mkdir --parents $$(@D)
 	cp $$< $$@
-
+	
 endef

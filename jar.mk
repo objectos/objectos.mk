@@ -24,7 +24,7 @@ define JAR_TASK
 $(1)LICENSE = $$($(1)CLASS_OUTPUT)/META-INF/LICENSE
 
 ## jar file path
-$(1)JAR_FILE = $$($(1)WORK)/$$($(1)JAR_NAME)-$$($(1)VERSION).jar
+$(1)JAR_FILE = $$($(1)WORK)/$$($(1)ARTIFACT_ID)-$$($(1)VERSION).jar
 
 ## jar command
 $(1)JARX = $$(JAR)
@@ -35,7 +35,7 @@ $(1)JARX += -C $$($(1)CLASS_OUTPUT)
 $(1)JARX += .
 
 ## requirements of the $(1)JAR_FILE target
-$(1)JAR_FILE_REQS = $$($(1)COMPILE_MARKER)
+$(1)JAR_FILE_REQS  = $$($(1)COMPILE_MARKER)
 $(1)JAR_FILE_REQS += $$($(1)LICENSE)
 ifdef $(1)JAR_FILE_REQS_MORE
 $(1)JAR_FILE_REQS += $$($(1)JAR_FILE_REQS_MORE)
@@ -44,6 +44,9 @@ endif
 #
 # jar targets
 #
+
+.PHONY: $(2)jar
+$(2)jar: $$($(1)JAR_FILE)
 
 $$($(1)JAR_FILE): $$($(1)JAR_FILE_REQS)
 	$$($(1)JARX)

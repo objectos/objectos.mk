@@ -124,6 +124,6 @@ $(1)RESOLUTION_JARS += $$(call to-jars-paths,$$($(1)COMPILE_DEPS))
 
 $$($(1)RESOLUTION): $$($(1)RESOLUTION_REQS)
 	mkdir --parents $$(@D)
-	echo "$$(sort $$($(1)RESOLUTION_JARS))" | $(TR) ' ' '\n' >> $$($(1)RESOLUTION)
+	echo "$$(sort $$($(1)RESOLUTION_JARS))" | $(TR) ' ' '\n' > $$($(1)RESOLUTION)
 
 endef
