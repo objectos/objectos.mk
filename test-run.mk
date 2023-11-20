@@ -23,6 +23,15 @@ define TEST_RUN_TASK
 ## test runtime dependencies
 # $(1)TEST_RUNTIME_DEPS =
 
+## test runtime required resolutions
+$(1)TEST_RUNTIME_RESOLUTIONS = $$(call to-resolutions,$$($(1)TEST_RUNTIME_DEPS))
+
+## test runtime required jars
+$(1)TEST_RUNTIME_JARS = $$(call to-jars,$$($(1)TEST_RUNTIME_DEPS))
+
+## test runtime module-path
+$(1)TEST_RUNTIME_MODULE_PATH = $$(call module-path,$$($(1)TEST_RUNTIME_JARS))
+
 ## test main class
 ifndef $(1)TEST_MAIN
 $(1)TEST_MAIN = $$($(1)MODULE).RunTests
@@ -33,7 +42,7 @@ $(1)TEST_RUNTIME_OUTPUT = $$($(1)WORK)/test-output
 
 ## test java command
 $(1)TEST_JAVAX = $$(JAVA)
-$(1)TEST_JAVAX += --module-path $$(call module-path,$$($(1)TEST_RUNTIME_DEPS))
+$(1)TEST_JAVAX += --module-path $$($(1)TEST_RUNTIME_MODULE_PATH)
 ifdef $(1)TEST_JAVAX_MODULES
 $(1)TEST_JAVAX += $$(foreach mod,$$($(1)TEST_JAVAX_MODULES),--add-modules $$(mod))
 else
@@ -56,11 +65,22 @@ $(1)TEST_JAVAX += $$($(1)TEST_RUNTIME_OUTPUT)
 ## test execution marker
 $(1)TEST_RUN_MARKER = $$($(1)TEST_RUNTIME_OUTPUT)/index.html
 
+## test execution requirements
+$(1)TEST_RUNTIME_REQS  = $$($(1)TEST_RUNTIME_RESOLUTIONS)
+$(1)TEST_RUNTIME_REQS += $$($(1)TEST_COMPILE_MARKER)
+
 #
 # test execution targets
 #
 
-$$($(1)TEST_RUN_MARKER): $$($(1)TEST_COMPILE_MARKER) 
+.PHONY: $(2)test
+$(2)test: $$($(1)TEST_RUN_MARKER)
+
+.PHONY: $(2)test-runtime-jars
+$(2)test-runtime-jars: $$($(1)TEST_RUNTIME_JARS)
+
+$$($(1)TEST_RUN_MARKER): $$($(1)TEST_RUNTIME_REQS)
+	$$(MAKE) $(2)compile-jars 
 	$$($(1)TEST_JAVAX)
 
 endef
