@@ -68,17 +68,11 @@ endif
 
 ## to-resolutions
 
-mk-resolution = $(OBJECTOS_DIR)/resolution/$(1)
+RESOLUTION_DIR = $(OBJECTOS_DIR)/resolution
+
+mk-resolution = $(RESOLUTION_DIR)/$(1)
 
 to-resolutions = $(foreach dep,$(1),$(call mk-resolution,$(dep)))
-
-## to-resolved-jar
-
-word-solidus = $(word $(2), $(subst $(solidus),$(space),$(1)))
-
-mk-resolved-jar = $(call mk-dependency,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3))
-
-to-resolved-jar = $(foreach dep,$(1),$(call to-resolutions,$(dep)))
 
 ## to-jars
 

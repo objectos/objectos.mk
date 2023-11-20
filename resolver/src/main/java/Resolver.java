@@ -15,7 +15,11 @@
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,195 +46,218 @@ import org.eclipse.aether.util.artifact.JavaScopes;
 
 public class Resolver {
 
-	Path localRepositoryPath;
+  Path localRepositoryPath;
 
-	Artifact requestedArtifact;
+  Path resolutionPath;
 
-	Resolver() {}
+  String dependency;
 
-	public static void main(String[] args) {
-		try {
-			Resolver resolver;
-			resolver = new Resolver();
+  Artifact requestedArtifact;
 
-			resolver.parseArgs(args);
+  Resolver() {}
 
-			List<String> result;
-			result = resolver.resolve();
+  public static void main(String[] args) {
+    try {
+      Resolver resolver;
+      resolver = new Resolver();
 
-			String newLineSeparated;
-			newLineSeparated = result.stream().collect(Collectors.joining("\n", "", "\n"));
+      resolver.parseArgs(args);
 
-			System.out.println(newLineSeparated);
-		} catch (DependencyResolutionException e) {
-			e.printStackTrace();
+      resolver.resolve();
+    } catch (Exception e) {
+      e.printStackTrace();
 
-			System.exit(1);
-		}
-	}
+      System.exit(1);
+    }
+  }
 
-	final void parseArgs(String[] args) {
-		int index;
-		index = 0;
+  final void parseArgs(String[] args) {
+    int index;
+    index = 0;
 
-		int length;
-		length = args.length;
+    int length;
+    length = args.length;
 
-		int requestedCount;
-		requestedCount = 0;
+    int requestedCount;
+    requestedCount = 0;
 
-		while (index < length) {
-			String arg;
-			arg = args[index++];
+    while (index < length) {
+      String arg;
+      arg = args[index++];
 
-			switch (arg) {
-				case "--local-repo" -> {
-					if (index < length) {
-						String name;
-						name = args[index++];
+      switch (arg) {
+        case "--local-repo" -> {
+          if (index < length) {
+            String name;
+            name = args[index++];
 
-						localRepositoryPath = Path.of(name);
-					}
-				}
+            localRepositoryPath = Path.of(name);
+          }
+        }
 
-				default -> {
-					requestedCount++;
+        case "--resolution-dir" -> {
+          if (index < length) {
+            String name;
+            name = args[index++];
 
-					String gav;
-					gav = arg.replace('/', ':');
+            resolutionPath = Path.of(name);
+          }
+        }
 
-					requestedArtifact = new DefaultArtifact(gav);
-				}
-			}
-		}
+        default -> {
+          requestedCount++;
 
-		List<String> errors;
-		errors = new ArrayList<>();
+          dependency = arg;
+        }
+      }
+    }
 
-		if (localRepositoryPath == null) {
-			errors.add("[ERROR] missing required option --local-repo [dir]");
-		}
+    List<String> errors;
+    errors = new ArrayList<>();
 
-		if (requestedCount == 0) {
-			errors.add("[ERROR] missing required option groupId/artifactId/version");
-		}
+    if (localRepositoryPath == null) {
+      errors.add("[ERROR] missing required option --local-repo [dir]");
+    }
 
-		if (requestedCount > 1) {
-			errors.add("[ERROR] multiple artifacts requested. Resolving only one artifact is supported.");
-		}
+    if (resolutionPath == null) {
+      errors.add("[ERROR] missing required option --resolution-dir [dir]");
+    }
 
-		if (!errors.isEmpty()) {
-			String msg;
-			msg = errors.stream().collect(Collectors.joining("\n"));
+    if (requestedCount == 0) {
+      errors.add("[ERROR] missing required option groupId/artifactId/version");
+    }
 
-			throw new IllegalArgumentException(msg);
-		}
-	}
+    if (requestedCount > 1) {
+      errors.add("[ERROR] multiple artifacts requested. Resolving only one artifact is supported.");
+    }
 
-	final List<String> resolve() throws DependencyResolutionException {
-		// RepositorySystem
+    if (!errors.isEmpty()) {
+      String msg;
+      msg = errors.stream().collect(Collectors.joining("\n"));
 
-		RepositorySystem repositorySystem;
-		repositorySystem = newRepositorySystem();
+      throw new IllegalArgumentException(msg);
+    }
 
-		// RepositorySystemSession
+    String gav;
+    gav = dependency.replace('/', ':');
 
-		RepositorySystemSession session;
-		session = newRepositorySystemSession(repositorySystem);
+    requestedArtifact = new DefaultArtifact(gav);
+  }
 
-		// CollectRequest
+  final void resolve() throws DependencyResolutionException, IOException {
+    // RepositorySystem
 
-		CollectRequest collectRequest;
-		collectRequest = new CollectRequest();
+    RepositorySystem repositorySystem;
+    repositorySystem = newRepositorySystem();
 
-		List<Dependency> dependencies;
-		dependencies = createDependencies();
+    // RepositorySystemSession
 
-		collectRequest.setDependencies(dependencies);
+    RepositorySystemSession session;
+    session = newRepositorySystemSession(repositorySystem);
 
-		RemoteRepository central;
-		central = new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2/").build();
+    // CollectRequest
 
-		List<RemoteRepository> repositories;
-		repositories = List.of(central);
+    CollectRequest collectRequest;
+    collectRequest = new CollectRequest();
 
-		collectRequest.setRepositories(repositories);
+    List<Dependency> dependencies;
+    dependencies = createDependencies();
 
-		// DependencyRequest
+    collectRequest.setDependencies(dependencies);
 
-		DependencyRequest dependencyRequest;
-		dependencyRequest = new DependencyRequest(collectRequest, null);
+    RemoteRepository central;
+    central = new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2/").build();
 
-		DependencyResult dependencyResult;
-		dependencyResult = repositorySystem.resolveDependencies(session, dependencyRequest);
+    List<RemoteRepository> repositories;
+    repositories = List.of(central);
 
-		List<ArtifactResult> artifacts;
-		artifacts = dependencyResult.getArtifactResults();
+    collectRequest.setRepositories(repositories);
 
-		return artifacts.stream()
-				.map(ArtifactResult::getArtifact)
-				.map(Artifact::getFile)
-				.map(File::toPath)
-				.map(path -> localRepositoryPath.relativize(path))
-				.map(Path::toString)
-				.sorted()
-				.toList();
-	}
+    // DependencyRequest
 
-	private RepositorySystem newRepositorySystem() {
-		RepositorySystemSupplier repositorySystemSupplier;
-		repositorySystemSupplier = new RepositorySystemSupplier();
+    DependencyRequest dependencyRequest;
+    dependencyRequest = new DependencyRequest(collectRequest, null);
 
-		return repositorySystemSupplier.get();
-	}
+    DependencyResult dependencyResult;
+    dependencyResult = repositorySystem.resolveDependencies(session, dependencyRequest);
 
-	private RepositorySystemSession newRepositorySystemSession(RepositorySystem repositorySystem) {
-		DefaultRepositorySystemSession session;
-		session = MavenRepositorySystemUtils.newSession();
+    List<ArtifactResult> artifacts;
+    artifacts = dependencyResult.getArtifactResults();
 
-		File localRepositoryFile;
-		localRepositoryFile = localRepositoryPath.toFile();
+    String contents = artifacts.stream()
+        .map(ArtifactResult::getArtifact)
+        .map(Artifact::getFile)
+        .map(File::toPath)
+        .map(path -> localRepositoryPath.relativize(path))
+        .map(Path::toString)
+        .sorted()
+        .collect(Collectors.joining("\n", "", "\n"));
 
-		LocalRepository localRepository;
-		localRepository = new LocalRepository(localRepositoryFile);
+    Path targetFile;
+    targetFile = resolutionPath.resolve(dependency);
 
-		LocalRepositoryManager localRepositoryManager;
-		localRepositoryManager = repositorySystem.newLocalRepositoryManager(session, localRepository);
+    Files.createDirectories(targetFile.getParent());
 
-		session.setLocalRepositoryManager(localRepositoryManager);
+    Files.writeString(
+        targetFile, contents, StandardCharsets.UTF_8,
+        StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+    );
+  }
 
-		RepositoryListener repositoryListener;
-		repositoryListener = new ThisRepositoryListener();
+  private RepositorySystem newRepositorySystem() {
+    RepositorySystemSupplier repositorySystemSupplier;
+    repositorySystemSupplier = new RepositorySystemSupplier();
 
-		session.setRepositoryListener(repositoryListener);
+    return repositorySystemSupplier.get();
+  }
 
-		return session;
-	}
+  private RepositorySystemSession newRepositorySystemSession(RepositorySystem repositorySystem) {
+    DefaultRepositorySystemSession session;
+    session = MavenRepositorySystemUtils.newSession();
 
-	private List<Dependency> createDependencies() {
-		String scope;
-		scope = JavaScopes.COMPILE;
+    File localRepositoryFile;
+    localRepositoryFile = localRepositoryPath.toFile();
 
-		Dependency dependency;
-		dependency = new Dependency(requestedArtifact, scope);
+    LocalRepository localRepository;
+    localRepository = new LocalRepository(localRepositoryFile);
 
-		return List.of(dependency);
-	}
+    LocalRepositoryManager localRepositoryManager;
+    localRepositoryManager = repositorySystem.newLocalRepositoryManager(session, localRepository);
+
+    session.setLocalRepositoryManager(localRepositoryManager);
+
+    RepositoryListener repositoryListener;
+    repositoryListener = new ThisRepositoryListener();
+
+    session.setRepositoryListener(repositoryListener);
+
+    return session;
+  }
+
+  private List<Dependency> createDependencies() {
+    String scope;
+    scope = JavaScopes.COMPILE;
+
+    Dependency dependency;
+    dependency = new Dependency(requestedArtifact, scope);
+
+    return List.of(dependency);
+  }
 
 }
 
 final class ThisRepositoryListener extends AbstractRepositoryListener {
 
-	@Override
-	public final void artifactDownloading(RepositoryEvent event) {
-		Artifact artifact;
-		artifact = event.getArtifact();
+  @Override
+  public final void artifactDownloading(RepositoryEvent event) {
+    Artifact artifact;
+    artifact = event.getArtifact();
 
-		log("Downloading", artifact);
-	}
+    log("Downloading", artifact);
+  }
 
-	private void log(String action, Artifact artifact) {
-		System.out.println(action + " " + artifact);
-	}
+  private void log(String action, Artifact artifact) {
+    System.out.println(action + " " + artifact);
+  }
 
 }

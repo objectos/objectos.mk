@@ -22,138 +22,178 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
-import org.eclipse.aether.artifact.DefaultArtifact;
 import org.testng.annotations.Test;
 
 public class ResolverTest {
 
-	@Test
-	public void resolveTestNg771() throws Exception {
-		Path repository;
-		repository = Files.createTempDirectory("resolver-test-");
+  @Test
+  public void resolveTestNg771() throws Exception {
+    Path root;
+    root = Files.createTempDirectory("resolver-test-");
 
-		try {
-			Resolver resolver;
-			resolver = new Resolver();
+    Path repository;
+    repository = root.resolve("repository");
 
-			String[] args;
-			args = new String[] {
-					"--local-repo",
-					repository.toString(),
-					"org.testng/testng/7.7.1"
-			};
+    Path resolution;
+    resolution = root.resolve("resolution");
 
-			resolver.parseArgs(args);
+    try {
+      Resolver resolver;
+      resolver = new Resolver();
 
-			assertEquals(resolver.localRepositoryPath, repository);
-			assertEquals(resolver.requestedArtifact, new DefaultArtifact("org.testng:testng:7.7.1"));
+      String dependency;
+      dependency = "org.testng/testng/7.7.1";
 
-			List<String> result;
-			result = resolver.resolve();
+      String[] args;
+      args = new String[] {
+          "--local-repo",
+          repository.toString(),
+          "--resolution-dir",
+          resolution.toString(),
+          dependency
+      };
 
-			assertEquals(
-					result,
+      resolver.parseArgs(args);
 
-					List.of(
-							"com/beust/jcommander/1.82/jcommander-1.82.jar",
-							"org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
-							"org/testng/testng/7.7.1/testng-7.7.1.jar",
-							"org/webjars/jquery/3.6.1/jquery-3.6.1.jar"
-					)
-			);
-		} finally {
-			rmdir(repository);
-		}
-	}
+      assertEquals(resolver.localRepositoryPath, repository);
+      assertEquals(resolver.resolutionPath, resolution);
+      assertEquals(resolver.dependency, dependency);
 
-	@Test
-	public void resolveLocal() throws Exception {
-		Path repository;
-		repository = Files.createTempDirectory("resolver-test-");
+      resolver.resolve();
 
-		try {
-			Resolver resolver;
-			resolver = new Resolver();
+      isRegularFile(repository, "com/beust/jcommander/1.82/jcommander-1.82.jar");
+      isRegularFile(repository, "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar");
+      isRegularFile(repository, "org/testng/testng/7.7.1/testng-7.7.1.jar");
+      isRegularFile(repository, "org/webjars/jquery/3.6.1/jquery-3.6.1.jar");
 
-			String[] args;
-			args = new String[] {
-					"--local-repo",
-					repository.toString(),
-					"com.example/test/1.0.0"
-			};
+      Path res;
+      res = resolution.resolve(dependency);
 
-			resolver.parseArgs(args);
+      assertEquals(
+          Files.readString(res),
 
-			Path testPom;
-			testPom = repository.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.pom"));
+          """
+          com/beust/jcommander/1.82/jcommander-1.82.jar
+          org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+          org/testng/testng/7.7.1/testng-7.7.1.jar
+          org/webjars/jquery/3.6.1/jquery-3.6.1.jar
+          """
+      );
+    } finally {
+      rmdir(root);
+    }
+  }
 
-			Files.createDirectories(testPom.getParent());
+  @Test
+  public void resolveLocal() throws Exception {
+    Path root;
+    root = Files.createTempDirectory("resolver-test-");
 
-			Files.writeString(
-					testPom,
+    Path repository;
+    repository = root.resolve("repository");
 
-					"""
-					<project>
+    Path resolution;
+    resolution = root.resolve("resolution");
 
-						<modelVersion>4.0.0</modelVersion>
+    try {
+      Resolver resolver;
+      resolver = new Resolver();
 
-						<groupId>com.example</groupId>
-						<artifactId>test</artifactId>
-						<version>1.0.0</version>
+      String dependency;
+      dependency = "com.example/test/1.0.0";
 
-						<dependencies>
-							<dependency>
-								<groupId>org.slf4j</groupId>
-								<artifactId>slf4j-api</artifactId>
-								<version>1.7.36</version>
-							</dependency>
-						</dependencies>
+      String[] args;
+      args = new String[] {
+          "--local-repo",
+          repository.toString(),
+          "--resolution-dir",
+          resolution.toString(),
+          dependency
+      };
 
-					</project>
-					"""
-			);
+      resolver.parseArgs(args);
 
-			Path testJar;
-			testJar = repository.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.jar"));
+      Path testPom;
+      testPom = root.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.pom"));
 
-			Files.writeString(testJar, "dummy");
+      Files.createDirectories(testPom.getParent());
 
-			assertEquals(resolver.localRepositoryPath, repository);
-			assertEquals(resolver.requestedArtifact, new DefaultArtifact("com.example:test:1.0.0"));
+      Files.writeString(
+          testPom,
 
-			List<String> result;
-			result = resolver.resolve();
+          """
+          <project>
 
-			assertEquals(
-					result,
+          	<modelVersion>4.0.0</modelVersion>
 
-					List.of(
-							"com/example/test/1.0.0/test-1.0.0.jar",
-							"org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar"
-					)
-			);
-		} finally {
-			rmdir(repository);
-		}
-	}
+          	<groupId>com.example</groupId>
+          	<artifactId>test</artifactId>
+          	<version>1.0.0</version>
 
-	private void rmdir(Path root) throws IOException {
-		var rm = new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-				Files.delete(dir);
-				return FileVisitResult.CONTINUE;
-			}
+          	<dependencies>
+          		<dependency>
+          			<groupId>org.slf4j</groupId>
+          			<artifactId>slf4j-api</artifactId>
+          			<version>1.7.36</version>
+          		</dependency>
+          	</dependencies>
 
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				Files.delete(file);
-				return FileVisitResult.CONTINUE;
-			}
-		};
+          </project>
+          """
+      );
 
-		Files.walkFileTree(root, rm);
-	}
+      Path testJar;
+      testJar = root.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.jar"));
+
+      Files.writeString(testJar, "dummy");
+
+      assertEquals(resolver.localRepositoryPath, repository);
+      assertEquals(resolver.resolutionPath, resolution);
+      assertEquals(resolver.dependency, dependency);
+
+      resolver.resolve();
+
+      isRegularFile(repository, "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar");
+
+      Path res;
+      res = resolution.resolve(dependency);
+
+      assertEquals(
+          Files.readString(res),
+
+          """
+          com/example/test/1.0.0/test-1.0.0.jar
+          org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+          """
+      );
+    } finally {
+      rmdir(root);
+    }
+  }
+
+  private void isRegularFile(Path dir, String path) {
+    Path file;
+    file = dir.resolve(path);
+
+    assertEquals(Files.isRegularFile(file), true);
+  }
+
+  private void rmdir(Path root) throws IOException {
+    var rm = new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        Files.delete(dir);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.delete(file);
+        return FileVisitResult.CONTINUE;
+      }
+    };
+
+    Files.walkFileTree(root, rm);
+  }
 
 }
