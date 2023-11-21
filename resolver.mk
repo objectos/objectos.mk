@@ -339,4 +339,5 @@ RESOLVEX += --resolution-dir $(RESOLUTION_DIR)
 
 $(RESOLVER_JAVA): export src = $(RESOLVER_SRC)
 $(RESOLVER_JAVA):
+	mkdir --parents $(@D)
 	echo "$${src}" > $@

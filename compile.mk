@@ -103,11 +103,6 @@ $$($(1)CLASSES): $$($(1)CLASS_OUTPUT)/%.class: $$($(1)MAIN)/%.java
 # compilation deps generation
 #
 
-## project or global objectos dir
-ifndef OBJECTOS_DIR
-$$(error The variable OBJECTOS_DIR was not defined)
-endif
-
 ## resolution cache file
 $(1)RESOLUTION = $$(OBJECTOS_DIR)/resolution/$$($(1)GROUP_ID)/$$($(1)ARTIFACT_ID)/$$($(1)VERSION)
 

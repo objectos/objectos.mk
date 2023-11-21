@@ -23,33 +23,41 @@
 #
 # - you must provide the pom template $$(MODULE)/pom.xml.tmpl
 
+define POM_DEPENDENCY
+		<dependency>
+			<groupId>$(1)</groupId>
+			<artifactId>$(2)</artifactId>
+			<version>$(3)</version>
+		</dependency>
+
+endef
+
+mk-pom-dep = $(call POM_DEPENDENCY,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3))
+
 define POM_TASK
 
 ## pom source
-$(1)POM_SOURCE = $$($(1)MODULE)/pom.xml.tmpl
+ifndef mk-pom
+$$(error The required mk-pom function was not defined)
+endif
 
 ## pom file
-$(1)POM_FILE = $$($(1)WORK)/$$($(1)JAR_NAME)-$$($(1)VERSION).pom
+$(1)POM_FILE = $$($(1)WORK)/$$($(1)ARTIFACT_ID)-$$($(1)VERSION).pom
 
-## pom external variables
-# $(1)POM_VARIABLES = 
+## deps
+$(1)POM_DEPENDENCIES = $$(foreach dep,$$($(1)COMPILE_DEPS),$$(call mk-pom-dep,$$(dep)))
 
-## ossrh pom sed command
-$(1)POM_SEDX = $$(SED)
-$(1)POM_SEDX += $$(foreach var,$$(POM_VARIABLES),--expression='s/@$$(var)@/$$($$(var))/g')
-$(1)POM_SEDX += --expression='s/@COPYRIGHT_YEARS@/$$($(1)COPYRIGHT_YEARS)/g'
-$(1)POM_SEDX += --expression='s/@ARTIFACT_ID@/$$($(1)ARTIFACT_ID)/g'
-$(1)POM_SEDX += --expression='s/@GROUP_ID@/$$($(1)GROUP_ID)/g'
-$(1)POM_SEDX += --expression='s/@VERSION@/$$($(1)VERSION)/g'
-$(1)POM_SEDX += --expression='s/@DESCRIPTION@/$$($(1)DESCRIPTION)/g'
-$(1)POM_SEDX += --expression='w $$($(1)POM_FILE)'
-$(1)POM_SEDX += $$($(1)POM_SOURCE)
+## contents
+$(1)POM_CONTENTS = $$(call mk-pom,$(1))
 
 #
 # Targets
 #
 
-$$($(1)POM_FILE): $$($(1)POM_SOURCE) Makefile
-	$$($(1)POM_SEDX)
+.PHONY: $(2)pom
+$(2)pom: $$($(1)POM_FILE)
+
+$$($(1)POM_FILE): Makefile
+	$$(file > $$@,$$($(1)POM_CONTENTS))
 
 endef

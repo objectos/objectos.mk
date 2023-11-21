@@ -63,7 +63,7 @@ MODULE_PATH_SEPARATOR := :
 module-path = $(subst $(space),$(MODULE_PATH_SEPARATOR),$(1))
 
 ifndef OBJECTOS_DIR
-$(error The variable OBJECTOS_DIR was not defined)
+$(error The required variable OBJECTOS_DIR was not defined)
 endif
 
 ## to-resolutions
