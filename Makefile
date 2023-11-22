@@ -38,39 +38,23 @@ MVN += --file $(RESOLVER_POM)
 # Delete the default suffixes
 .SUFFIXES:
 
-RESOLVER_PATH = $(RESOLVER)/src/main/java
-
-include tools.mk
-include resolver.mk
-
-DEPS  = org.testng:testng:7.7.1
-DEPS += org.slf4j:slf4j-nop:1.7.36
-
-DEPS_MODULE_PATH = $(call module-path,$(shell $(RESOLVEX) $(DEPS)))
-
-.PHONY: resolver-test
-resolver-test: $(RESOLVER_DEPS_JARS)
-	@echo $(DEPS_MODULE_PATH)
-
 #
 # Default target
 #
 
 .PHONY: all
-all: resolver
+all: resolver test
 
 .PHONY: clean
 clean:
 	$(MVN) clean
-	rm $(RESOLVER_MK)
 
-#.PHONY: resolver
-#resolver: $(RESOLVER_DEPS)
+.PHONY: resolver
+resolver: $(RESOLVER_DEPS)
 
-#$(RESOLVER_DEPS): $(RESOLVER_POM)
-#	$(MVN) test
+$(RESOLVER_DEPS): $(RESOLVER_POM)
+	$(MVN) test
 
-#$(RESOLVER_POM):
-
-#print-%::
-#	@echo $* = $($*)
+.PHONY: test
+test:
+	$(MVN) test

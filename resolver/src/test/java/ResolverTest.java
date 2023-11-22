@@ -114,7 +114,7 @@ public class ResolverTest {
       resolver.parseArgs(args);
 
       Path testPom;
-      testPom = root.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.pom"));
+      testPom = repository.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.pom"));
 
       Files.createDirectories(testPom.getParent());
 
@@ -143,7 +143,7 @@ public class ResolverTest {
       );
 
       Path testJar;
-      testJar = root.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.jar"));
+      testJar = repository.resolve(Path.of("com", "example", "test", "1.0.0", "test-1.0.0.jar"));
 
       Files.writeString(testJar, "dummy");
 
