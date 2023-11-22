@@ -31,9 +31,11 @@ RESOLVER_POM = $(RESOLVER)/pom.xml
 ## deps file
 RESOLVER_DEPS = $(RESOLVER)/src/dep-tree
 
+include tools.mk
+
 ## mvn command
-MVN  = mvn
-MVN += --file $(RESOLVER_POM)
+MVNX := $(MVN)
+MVNX += --file $(RESOLVER_POM)
 
 # Delete the default suffixes
 .SUFFIXES:
@@ -47,14 +49,14 @@ all: resolver test
 
 .PHONY: clean
 clean:
-	$(MVN) clean
+	$(MVNX) clean
 
 .PHONY: resolver
 resolver: $(RESOLVER_DEPS)
 
 $(RESOLVER_DEPS): $(RESOLVER_POM)
-	$(MVN) test
+	$(MVNX) test
 
 .PHONY: test
 test:
-	$(MVN) test
+	$(MVNX) test

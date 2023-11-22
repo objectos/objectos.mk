@@ -284,13 +284,8 @@ final class ThisRepositoryListener extends AbstractRepositoryListener {
 }
 endef
 
-## resolver path
-ifndef RESOLVER_PATH
-RESOLVER_PATH = $(OBJECTOS_DIR)
-endif
-
 ## Resolver.java path
-RESOLVER_JAVA = $(RESOLVER_PATH)/Resolver.java
+RESOLVER_JAVA = $(OBJECTOS_DIR)/Resolver.java
 
 ## Resolver.java deps
 RESOLVER_DEPS  = commons-codec/commons-codec/1.16.0

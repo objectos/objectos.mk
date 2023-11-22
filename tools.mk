@@ -15,7 +15,7 @@
 #
 
 #
-# Defines the tools
+# Tools and global options
 #
 
 ## configures JAVA_HOME_BIN
@@ -23,6 +23,21 @@ ifdef JAVA_HOME
 JAVA_HOME_BIN := $(JAVA_HOME)/bin
 else
 JAVA_HOME_BIN :=
+endif
+
+## local objectos dir
+ifndef OBJECTOS_DIR
+OBJECTOS_DIR := $(HOME)/.cache/objectos
+endif
+
+## local repository path
+ifndef LOCAL_REPO_PATH
+LOCAL_REPO_PATH := $(OBJECTOS_DIR)/repository
+endif
+
+## local resolution dir
+ifndef RESOLUTION_DIR
+RESOLUTION_DIR := $(OBJECTOS_DIR)/resolution
 endif
 
 ## java command
@@ -56,3 +71,7 @@ SED := sed
 
 ## tr common options
 TR := tr
+
+## mvn command
+MVN := mvn
+MVN += --define maven.repo.local=$(LOCAL_REPO_PATH)

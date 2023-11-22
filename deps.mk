@@ -18,14 +18,11 @@
 # Dependencies related options & functions
 #
 
-## local repository path
-LOCAL_REPO_PATH := $(HOME)/.cache/objectos
-
 ## remote repository URL
 REMOTE_REPO_URL := https://repo.maven.apache.org/maven2
 
 ## remote repository curl
-REMOTE_REPO_CURLX = $(CURL)
+REMOTE_REPO_CURLX := $(CURL)
 REMOTE_REPO_CURLX += --create-dirs
 
 ## dependency function
@@ -62,13 +59,11 @@ MODULE_PATH_SEPARATOR := :
 
 module-path = $(subst $(space),$(MODULE_PATH_SEPARATOR),$(1))
 
-ifndef OBJECTOS_DIR
-$(error The required variable OBJECTOS_DIR was not defined)
+ifndef RESOLUTION_DIR
+$(error The required variable RESOLUTION_DIR was not defined)
 endif
 
 ## to-resolutions
-
-RESOLUTION_DIR = $(OBJECTOS_DIR)/resolution
 
 mk-resolution = $(RESOLUTION_DIR)/$(1)
 
@@ -78,7 +73,7 @@ to-resolutions = $(foreach dep,$(1),$(call mk-resolution,$(dep)))
 
 to-jars-paths = $(foreach res,$(call to-resolutions,$(1)),$(file < $(res)))
 
-to-jars = $(foreach jar,$(call to-jars-paths,$(1)),$(LOCAL_REPO_PATH)/$(jar))
+to-jars = $(sort $(foreach jar,$(call to-jars-paths,$(1)),$(LOCAL_REPO_PATH)/$(jar)))
 
 #
 # Gets the dependency from the remote repository

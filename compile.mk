@@ -80,31 +80,11 @@ $(1)COMPILE_REQS += $$($(1)COMPILE_REQS_MORE)
 endif
 
 #
-# compilation targets
-#
-
-.PHONY: $(2)compile
-$(2)compile: $$($(1)COMPILE_MARKER)
-
-.PHONY: $(2)compile-jars
-$(2)compile-jars: $$($(1)COMPILE_JARS)
-
-$$($(1)COMPILE_MARKER): $$($(1)COMPILE_REQS)
-	if [ -n "$$($(1)DIRTY)" ]; then \
-		$(MAKE) $(2)compile-jars; \
-		$$($(1)JAVACX); \
-	fi
-	touch $$@
-
-$$($(1)CLASSES): $$($(1)CLASS_OUTPUT)/%.class: $$($(1)MAIN)/%.java
-	$$(eval $(1)DIRTY += $$$$<)
-
-#
 # compilation deps generation
 #
 
 ## resolution cache file
-$(1)RESOLUTION = $$(OBJECTOS_DIR)/resolution/$$($(1)GROUP_ID)/$$($(1)ARTIFACT_ID)/$$($(1)VERSION)
+$(1)RESOLUTION = $$(RESOLUTION_DIR)/$$($(1)GROUP_ID)/$$($(1)ARTIFACT_ID)/$$($(1)VERSION)
 
 ## resolution cache file reqs
 ifndef $(1)RESOLUTION_REQS
@@ -120,5 +100,25 @@ $(1)RESOLUTION_JARS += $$(call to-jars-paths,$$($(1)COMPILE_DEPS))
 $$($(1)RESOLUTION): $$($(1)RESOLUTION_REQS)
 	mkdir --parents $$(@D)
 	echo "$$(sort $$($(1)RESOLUTION_JARS))" | $(TR) ' ' '\n' > $$($(1)RESOLUTION)
+
+#
+# compilation targets
+#
+
+.PHONY: $(2)compile
+$(2)compile: $$($(1)COMPILE_MARKER)
+
+.PHONY: $(2)compile-jars
+$(2)compile-jars: $$($(1)COMPILE_JARS) $$($(1)RESOLUTION)
+
+$$($(1)COMPILE_MARKER): $$($(1)COMPILE_REQS)
+	if [ -n "$$($(1)DIRTY)" ]; then \
+		$(MAKE) $(2)compile-jars; \
+		$$($(1)JAVACX); \
+	fi
+	touch $$@
+
+$$($(1)CLASSES): $$($(1)CLASS_OUTPUT)/%.class: $$($(1)MAIN)/%.java
+	$$(eval $(1)DIRTY += $$$$<)
 
 endef
