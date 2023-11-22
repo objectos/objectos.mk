@@ -332,7 +332,6 @@ RESOLVEX += --resolution-dir $(RESOLUTION_DIR)
 # resolver rules
 #
 
-$(RESOLVER_JAVA): export src = $(RESOLVER_SRC)
-$(RESOLVER_JAVA):
+$(RESOLVER_JAVA): Makefile
 	mkdir --parents $(@D)
 	$(file > $@,$(RESOLVER_SRC))
