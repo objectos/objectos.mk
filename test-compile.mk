@@ -59,12 +59,28 @@ endif
 $(1)TEST_JAVACX += --release $$($(1)JAVA_RELEASE)
 $(1)TEST_JAVACX += $$($(1)TEST_DIRTY)
 
+## test resources directory
+# $(1)TEST_RESOURCES = $$($(1)MODULE)/test-resources
+
+ifdef $(1)TEST_RESOURCES
+## test resources "source"
+$(1)TEST_RESOURCES_SRC = $$(shell find $${$(1)TEST_RESOURCES} -type f -print)
+
+## test resources "output"
+$(1)TEST_RESOURCES_OUT = $$($(1)TEST_RESOURCES_SRC:$$($(1)TEST_RESOURCES)/%=$$($(1)TEST_CLASS_OUTPUT)/%)
+
+## target to copy test resources
+$$($(1)TEST_RESOURCES_OUT): $$($(1)TEST_CLASS_OUTPUT)/%: $$($(1)TEST_RESOURCES)/%
+	cp $$< $$@
+endif
+
 ## test compilation marker
 $(1)TEST_COMPILE_MARKER = $$($(1)WORK)/test-compile-marker
 
 ## test compilation requirements
 $(1)TEST_COMPILE_REQS  = $$($(1)TEST_COMPILE_RESOLUTIONS)
 $(1)TEST_COMPILE_REQS += $$($(1)TEST_CLASSES)
+$(1)TEST_COMPILE_REQS += $$($(1)TEST_RESOURCES_OUT)
 
 #
 # test compilation targets

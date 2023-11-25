@@ -80,7 +80,7 @@ $(2)test: $$($(1)TEST_RUN_MARKER)
 $(2)test-runtime-jars: $$($(1)TEST_RUNTIME_JARS)
 
 $$($(1)TEST_RUN_MARKER): $$($(1)TEST_RUNTIME_REQS)
-	$$(MAKE) $(2)compile-jars 
+	$$(MAKE) $(2)test-runtime-jars 
 	$$($(1)TEST_JAVAX)
 
 endef
