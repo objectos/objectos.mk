@@ -71,6 +71,7 @@ $(1)TEST_RESOURCES_OUT = $$($(1)TEST_RESOURCES_SRC:$$($(1)TEST_RESOURCES)/%=$$($
 
 ## target to copy test resources
 $$($(1)TEST_RESOURCES_OUT): $$($(1)TEST_CLASS_OUTPUT)/%: $$($(1)TEST_RESOURCES)/%
+	mkdir --parents $$(@D)
 	cp $$< $$@
 endif
 
