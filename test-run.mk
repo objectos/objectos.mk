@@ -40,8 +40,14 @@ endif
 ## test runtime output path
 $(1)TEST_RUNTIME_OUTPUT = $$($(1)WORK)/test-output
 
+## test system properties
+#$(1)TEST_RUNTIME_SYSPROPS
+
 ## test java command
-$(1)TEST_JAVAX = $$(JAVA)
+$(1)TEST_JAVAX  = $$(JAVA)
+ifdef $(1)TEST_RUNTIME_SYSPROPS
+$(1)TEST_JAVAX += $$(foreach v,$$($(1)TEST_RUNTIME_SYSPROPS),-D$$(v))
+endif
 $(1)TEST_JAVAX += --module-path $$($(1)TEST_RUNTIME_MODULE_PATH)
 ifdef $(1)TEST_JAVAX_MODULES
 $(1)TEST_JAVAX += $$(foreach mod,$$($(1)TEST_JAVAX_MODULES),--add-modules $$(mod))
