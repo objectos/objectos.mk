@@ -35,7 +35,7 @@ $(2)clean-install:
 	rm -f $$($(1)INSTALL)
 
 $$($(1)INSTALL): $$($(1)JAR_FILE)
-	mkdir --parents $$(@D)
+	@mkdir --parents $$(@D)
 	cp $$< $$@
 	
 endef

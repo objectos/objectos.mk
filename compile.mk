@@ -88,7 +88,7 @@ $(1)RESOLUTION = $$(RESOLUTION_DIR)/$$($(1)GROUP_ID)/$$($(1)ARTIFACT_ID)/$$($(1)
 
 ## resolution cache file reqs
 ifndef $(1)RESOLUTION_REQS
-$(1)RESOLUTION_REQS = $$($(1)MODULE).mk
+$(1)RESOLUTION_REQS = $$($(1)MODULE)/$$($(1)MODULE).mk
 endif
 
 $(1)RESOLUTION_DEPS  = $$($(1)GROUP_ID)/$$($(1)ARTIFACT_ID)/$$($(1)VERSION)
