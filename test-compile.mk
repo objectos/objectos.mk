@@ -95,7 +95,6 @@ $$($(1)TEST_COMPILE_MARKER): $$($(1)TEST_COMPILE_REQS)
 	if [ -n "$$($(1)TEST_DIRTY)" ]; then \
 		$$($(1)TEST_JAVACX); \
 	fi
-	$$(file > $$@,$$($(1)TEST_CLASS_OUTPUT))
 ifneq ($$($(1)TEST_COMPILE_DEPS),)
 	cat $$($(1)TEST_COMPILE_DEPS) | sort | uniq >> $$@
 endif
