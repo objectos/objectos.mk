@@ -188,7 +188,6 @@ public class Resolver {
         .map(ArtifactResult::getArtifact)
         .map(Artifact::getFile)
         .map(File::toPath)
-        .map(path -> localRepositoryPath.relativize(path))
         .map(Path::toString)
         .sorted()
         .collect(Collectors.joining("\n", "", "\n"));

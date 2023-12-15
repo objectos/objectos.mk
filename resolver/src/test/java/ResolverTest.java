@@ -73,11 +73,11 @@ public class ResolverTest {
           Files.readString(res),
 
           """
-          com/beust/jcommander/1.82/jcommander-1.82.jar
-          org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-          org/testng/testng/7.7.1/testng-7.7.1.jar
-          org/webjars/jquery/3.6.1/jquery-3.6.1.jar
-          """
+          ${REPO}/com/beust/jcommander/1.82/jcommander-1.82.jar
+          ${REPO}/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+          ${REPO}/org/testng/testng/7.7.1/testng-7.7.1.jar
+          ${REPO}/org/webjars/jquery/3.6.1/jquery-3.6.1.jar
+          """.replace("${REPO}", repository.toString())
       );
     } finally {
       rmdir(root);
@@ -162,9 +162,9 @@ public class ResolverTest {
           Files.readString(res),
 
           """
-          com/example/test/1.0.0/test-1.0.0.jar
-          org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-          """
+          ${REPO}/com/example/test/1.0.0/test-1.0.0.jar
+          ${REPO}/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+          """.replace("${REPO}", repository.toString())
       );
     } finally {
       rmdir(root);
