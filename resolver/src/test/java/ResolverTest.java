@@ -27,6 +27,58 @@ import org.testng.annotations.Test;
 public class ResolverTest {
 
   @Test
+  public void resolveJacksonDatabind2() throws Exception {
+    Path root;
+    root = Files.createTempDirectory("resolver-test-");
+
+    Path repository;
+    repository = root.resolve("repository");
+
+    Path resolution;
+    resolution = root.resolve("resolution");
+
+    try {
+      Resolver resolver;
+      resolver = new Resolver();
+
+      String dependency;
+      dependency = "com.fasterxml.jackson.core/jackson-databind/2.16.1";
+
+      String[] args;
+      args = new String[] {
+          "--local-repo",
+          repository.toString(),
+          "--resolution-dir",
+          resolution.toString(),
+          dependency
+      };
+
+      resolver.parseArgs(args);
+
+      assertEquals(resolver.localRepositoryPath, repository);
+      assertEquals(resolver.resolutionPath, resolution);
+      assertEquals(resolver.requestedDependency, dependency);
+
+      resolver.resolve();
+
+      Path res;
+      res = resolution.resolve(dependency);
+
+      assertEquals(
+          Files.readString(res),
+
+          """
+          ${REPO}/com/fasterxml/jackson/core/jackson-annotations/2.16.1/jackson-annotations-2.16.1.jar
+          ${REPO}/com/fasterxml/jackson/core/jackson-core/2.16.1/jackson-core-2.16.1.jar
+          ${REPO}/com/fasterxml/jackson/core/jackson-databind/2.16.1/jackson-databind-2.16.1.jar
+          """.replace("${REPO}", repository.toString())
+      );
+    } finally {
+      rmdir(root);
+    }
+  }
+
+  @Test
   public void resolveTestNg771() throws Exception {
     Path root;
     root = Files.createTempDirectory("resolver-test-");
@@ -57,7 +109,7 @@ public class ResolverTest {
 
       assertEquals(resolver.localRepositoryPath, repository);
       assertEquals(resolver.resolutionPath, resolution);
-      assertEquals(resolver.dependency, dependency);
+      assertEquals(resolver.requestedDependency, dependency);
 
       resolver.resolve();
 
@@ -149,7 +201,7 @@ public class ResolverTest {
 
       assertEquals(resolver.localRepositoryPath, repository);
       assertEquals(resolver.resolutionPath, resolution);
-      assertEquals(resolver.dependency, dependency);
+      assertEquals(resolver.requestedDependency, dependency);
 
       resolver.resolve();
 
