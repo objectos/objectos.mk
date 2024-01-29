@@ -40,5 +40,8 @@ ifneq ($$($(1)WORK),)
 else
 	rm -f $$($(1)COMPILE_MARKER)
 endif
+
+$$($(1)WORK):
+	mkdir --parents $$@
 	
 endef

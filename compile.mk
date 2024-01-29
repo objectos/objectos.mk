@@ -91,7 +91,7 @@ endif
 .PHONY: $(2)compile
 $(2)compile: $$($(1)COMPILE_MARKER)
 
-$$($(1)COMPILE_MODULE_PATH): $$($(1)COMPILE_DEPS)
+$$($(1)COMPILE_MODULE_PATH): $$($(1)COMPILE_DEPS) | $$($(1)WORK)
 ifneq ($$($(1)COMPILE_DEPS),)
 	cat $$^ | sort -u | paste --delimiter='$$(MODULE_PATH_SEPARATOR)' --serial > $$@
 else
