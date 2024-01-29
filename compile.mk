@@ -25,7 +25,7 @@ endif
 define COMPILE_TASK
 
 ## source directory
-$(1)MAIN = $$($(1)MODULE)/main
+$(1)MAIN = $$($(1)BASEDIR)/main
 
 ## source files
 $(1)SOURCES = $$(shell find $${$(1)MAIN} -type f -name '*.java' -print)

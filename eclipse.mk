@@ -48,7 +48,7 @@ endef
 define ECLIPSE_PROJECT
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>objectos.way:$(ECLIPSE_MODULE_NAME)</name>
+	<name>$(ECLIPSE_MODULE_NAME)</name>
 	<comment></comment>
 	<projects>
 	</projects>

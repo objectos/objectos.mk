@@ -24,8 +24,12 @@ endif
 
 define CLEAN_TASK
 
+ifndef $(1)BASEDIR
+$(1)BASEDIR = $$($(1)MODULE)
+endif
+
 ## work dir
-$(1)WORK = $$($(1)MODULE)/work
+$(1)WORK = $$($(1)BASEDIR)/work
 
 ## targets
 
