@@ -40,25 +40,22 @@ define ECLIPSE_CLASSPATH_TMPL
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-$(1)	<classpathentry kind="output" path="eclipse-bin"/>
-</classpath>
+	<classpathentry kind="output" path="eclipse-bin"/>
+$(1)</classpath>
 endef
 
 ## Eclipse classpath entry template
-define ECLIPSE_CLASSPATH_ENTRY
+define eclipse_classpath_lib
 	<classpathentry kind="lib" path="$(1)"/>
 
 endef
 
-## Eclipse classpath deps
-#ECLIPSE_CLASSPATH_DEPS :=
+## Eclipse classpath libs
+#ECLIPSE_CLASSPATH_LIBS :=
 
 ## Eclipse classpath libraries
-ECLIPSE_CLASSPATH_LIBS := $(foreach dep,$(ECLIPSE_CLASSPATH_DEPS),$(file < $(dep)))
-
-## Eclipse classpath entries
-ECLIPSE_CLASSPATH_ENTRIES := $(foreach lib,$(sort $(ECLIPSE_CLASSPATH_LIBS)),$(call ECLIPSE_CLASSPATH_ENTRY,$(lib)))
+ECLIPSE_CLASSPATH_LIBS_XML = $(foreach jar,$(sort $(foreach lib,$(ECLIPSE_CLASSPATH_LIBS),$(file < $(lib)))),$(call eclipse_classpath_lib,$(jar)))
 
 .PHONY: eclipse-classpath
 eclipse-classpath:
-	$(file > $(ECLIPSE_CLASSPATH),$(call ECLIPSE_CLASSPATH_TMPL,$(ECLIPSE_CLASSPATH_ENTRIES)))
+	$(file > $(ECLIPSE_CLASSPATH),$(call ECLIPSE_CLASSPATH_TMPL,$(ECLIPSE_CLASSPATH_LIBS_XML)))

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2023 Objectos Software LTDA.
+# Copyright (C) 2023-2024 Objectos Software LTDA.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,96 @@
 #
 
 #
+# Tools and global options
+#
+
+## configures JAVA_HOME_BIN
+ifdef JAVA_HOME
+JAVA_HOME_BIN := $(JAVA_HOME)/bin
+else
+JAVA_HOME_BIN :=
+endif
+
+## java command
+JAVA := $(JAVA_HOME_BIN)/java
+
+## javac command
+JAVAC := $(JAVA_HOME_BIN)/javac
+JAVAC += -g
+
+## jar command
+JAR := $(JAVA_HOME_BIN)/jar
+
+## javadoc command
+JAVADOC := $(JAVA_HOME_BIN)/javadoc
+
+#
+# java related functions
+#
+
+## chars
+empty :=
+space := $(empty) $(empty)
+colon := :
+dot := .
+solidus := /
+
+## class path separator
+ifeq ($(OS),Windows_NT)
+CLASS_PATH_SEPARATOR := ;
+else
+CLASS_PATH_SEPARATOR := :
+endif
+
+## class-path function
+##
+## syntax:
+## $(call class-path,[list of deps])
+class-path = $(subst $(space),$(CLASS_PATH_SEPARATOR),$(1))
+
+## module path separator
+MODULE_PATH_SEPARATOR := $(colon)
+
+## module-path function
+##
+## syntax:
+## $(call module-path,[list of deps])
+module-path = $(subst $(space),$(MODULE_PATH_SEPARATOR),$(1))
+
+## dependency function
+## 
+## syntax:
+## $(call dependency,[GROUP_ID],[ARTIFACT_ID],[VERSION])
+mk-dependency = $(subst $(dot),$(solidus),$(1))/$(2)/$(3)/$(2)-$(3).$(4)
+dependency = $(LOCAL_REPO_PATH)/$(subst $(dot),$(solidus),$(1))/$(2)/$(3)/$(2)-$(3).jar
+
+## dep-to-jar
+word-solidus = $(word $(2), $(subst $(solidus),$(space),$(1)))
+mk-resolved-jar = $(call mk-dependency,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3),jar)
+gav-to-local = $(LOCAL_REPO_PATH)/$(call mk-resolved-jar,$(1))
+dep-to-jar = $(foreach dep,$(1),$(call gav-to-local,$(dep)))
+
+## to-resolution-files
+mk-resolution-file = $(RESOLUTION_DIR)/$(1)
+to-resolution-files = $(foreach dep,$(1),$(call mk-resolution-file,$(dep)))
+
+#
 # Dependencies related options & functions
 #
 
+## remote repository URL
+ifndef REMOTE_REPO_URL
+REMOTE_REPO_URL := https://repo.maven.apache.org/maven2
+endif
+
+## local repository path
+ifndef LOCAL_REPO_PATH
+LOCAL_REPO_PATH := $(HOME)/.cache/objectos/repository
+endif
+
+## resolution directory
 ifndef RESOLUTION_DIR
-$(error The required variable RESOLUTION_DIR was not defined)
+RESOLUTION_DIR := $(HOME)/.cache/objectos/resolution
 endif
 
 ## Resolver.java path
@@ -56,25 +141,30 @@ RESOLVER_DEPS += org.slf4j/jcl-over-slf4j/1.7.36
 RESOLVER_DEPS += org.slf4j/slf4j-api/1.7.36
 RESOLVER_DEPS += org.slf4j/slf4j-nop/1.7.36
 
-## dep-to-jar
-word-solidus = $(word $(2), $(subst $(solidus),$(space),$(1)))
-mk-resolved-jar = $(call mk-dependency,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3),jar)
-gav-to-local = $(LOCAL_REPO_PATH)/$(call mk-resolved-jar,$(1))
-dep-to-jar = $(foreach dep,$(1),$(call gav-to-local,$(dep)))
-
 ## Resolver.java jars
-RESOLVER_DEPS_JARS = $(call dep-to-jar,$(RESOLVER_DEPS))
+RESOLVER_DEPS_JARS := $(call dep-to-jar,$(RESOLVER_DEPS))
 
 ## resolve java command
-RESOLVEX  = $(JAVA)
+RESOLVEX := $(JAVA)
 RESOLVEX += --class-path $(call class-path,$(RESOLVER_DEPS_JARS))
 RESOLVEX += $(RESOLVER_JAVA)
 RESOLVEX += --local-repo $(LOCAL_REPO_PATH)
 RESOLVEX += --resolution-dir $(RESOLUTION_DIR)
 
+## remote repository curl
+REMOTE_REPO_WGETX := wget
+REMOTE_REPO_WGETX += --directory-prefix=$(LOCAL_REPO_PATH)
+REMOTE_REPO_WGETX += --force-directories
+REMOTE_REPO_WGETX += --no-host-directories
+REMOTE_REPO_WGETX += --cut-dirs=1
+REMOTE_REPO_WGETX += --no-verbose
+
 #
-# resolver rules
+# java dependency related rules
 #
+
+$(LOCAL_REPO_PATH)/%.jar:	
+	$(REMOTE_REPO_WGETX) --output $@ $(@:$(LOCAL_REPO_PATH)/%.jar=$(REMOTE_REPO_URL)/%.jar)
 
 $(RESOLVER_JAVA):
 	wget --no-verbose $(RESOLVER_URL) 
