@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2023 Objectos Software LTDA.
+# Copyright (C) 2023-2024 Objectos Software LTDA.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
 #
 
 #
-# Eclipse targets
-#
-
-#
-# eclipse-classpath
+# eclipse-classpath rule
 #
 
 ## Eclipse classpath file
@@ -41,7 +37,7 @@ define ECLIPSE_CLASSPATH_TMPL
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="eclipse-bin"/>
-$(1)</classpath>
+$(1)$(2)</classpath>
 endef
 
 ## Eclipse classpath entry template
@@ -50,12 +46,25 @@ define eclipse_classpath_lib
 
 endef
 
-## Eclipse classpath libs
-#ECLIPSE_CLASSPATH_LIBS :=
+define eclipse_classpath_testlib
+	<classpathentry kind="lib" path="$(1)">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 
-## Eclipse classpath libraries
-ECLIPSE_CLASSPATH_LIBS_XML = $(foreach jar,$(sort $(foreach lib,$(ECLIPSE_CLASSPATH_LIBS),$(file < $(lib)))),$(call eclipse_classpath_lib,$(jar)))
+endef
+
+## compile classpath libraries
+ifdef COMPILE_RESOLUTION_FILES
+ECLIPSE_CLASSPATH_LIBS = $(foreach jar,$(sort $(foreach lib,$(COMPILE_RESOLUTION_FILES),$(file < $(lib)))),$(call eclipse_classpath_lib,$(jar)))
+endif
+
+## test classpath libraries
+ifdef TEST_COMPILE_RESOLUTION_FILES
+ECLIPSE_CLASSPATH_TESTLIBS = $(foreach jar,$(sort $(foreach lib,$(TEST_COMPILE_RESOLUTION_FILES),$(file < $(lib)))),$(call eclipse_classpath_testlib,$(jar)))
+endif
 
 .PHONY: eclipse-classpath
 eclipse-classpath:
-	$(file > $(ECLIPSE_CLASSPATH),$(call ECLIPSE_CLASSPATH_TMPL,$(ECLIPSE_CLASSPATH_LIBS_XML)))
+	$(file > $(ECLIPSE_CLASSPATH),$(call ECLIPSE_CLASSPATH_TMPL,$(ECLIPSE_CLASSPATH_LIBS),$(ECLIPSE_CLASSPATH_TESTLIBS)))

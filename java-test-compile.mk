@@ -28,15 +28,12 @@ TEST_SOURCES := $(shell find ${TEST} -type f -name '*.java' -print)
 TEST_CLASS_OUTPUT := $(WORK)/test
 
 ## test compile-time dependencies
-# TEST_COMPILE_DEPS := 
+# TEST_COMPILE_DEPS :=
 
 ## test compile-time resolution files
 ifdef TEST_COMPILE_DEPS
 TEST_COMPILE_RESOLUTION_FILES := $(call to-resolution-files,$(TEST_COMPILE_DEPS))
 endif
-
-## test compile-time jars
-# TEST_COMPILE_PATHS
 
 ## test compile-time class-path
 TEST_COMPILE_CLASS_PATH := $(WORK)/test-compile-class-path
@@ -90,6 +87,9 @@ test-compile@clean:
 
 $(TEST_COMPILE_CLASS_PATH): $(TEST_COMPILE_RESOLUTION_FILES)
 	echo $(CLASS_OUTPUT) > $@.tmp
+ifdef COMPILE_RESOLUTION_FILES
+	cat $(COMPILE_RESOLUTION_FILES) | sort -u >> $@.tmp
+endif
 ifdef TEST_COMPILE_RESOLUTION_FILES
 	cat $(TEST_COMPILE_RESOLUTION_FILES) | sort -u >> $@.tmp
 endif

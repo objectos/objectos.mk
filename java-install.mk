@@ -54,10 +54,10 @@ $(INSTALL): $(JAR_FILE)
 	@mkdir --parents $(@D)
 	cp $< $@
 
-$(INSTALL_RESOLUTION_TMP):
+$(INSTALL_RESOLUTION_TMP)::
 	echo $(INSTALL) > $@
-ifdef COMPILE_DEPS
-	cat $(COMPILE_DEPS) | sort -u >> #@
+ifdef COMPILE_RESOLUTION_FILES
+	cat $(COMPILE_RESOLUTION_FILES) | sort -u >> $@
 endif
 
 $(INSTALL_RESOLUTION_FILE): $(INSTALL_RESOLUTION_TMP)

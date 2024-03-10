@@ -19,11 +19,7 @@
 #
 
 ## test runtime dependencies
-ifndef TEST_RUNTIME_DEPS
-ifdef TEST_COMPILE_DEPS
-TEST_RUNTIME_DEPS := $(TEST_COMPILE_DEPS) 
-endif
-endif
+# TEST_RUNTIME_DEPS := 
 
 ## test runtime resolution files
 ifdef TEST_RUNTIME_DEPS
@@ -109,7 +105,13 @@ test@clean:
 
 $(TEST_RUNTIME_PATH): $(TEST_RUNTIME_RESOLUTION_FILES)
 	echo $(CLASS_OUTPUT) > $@.tmp
+ifdef COMPILE_RESOLUTION_FILES
+	cat $(COMPILE_RESOLUTION_FILES) | sort -u >> $@.tmp
+endif
 	echo $(TEST_CLASS_OUTPUT) >> $@.tmp
+ifdef TEST_COMPILE_RESOLUTION_FILES
+	cat $(TEST_COMPILE_RESOLUTION_FILES) | sort -u >> $@.tmp
+endif
 ifdef TEST_RUNTIME_RESOLUTION_FILES
 	cat $(TEST_RUNTIME_RESOLUTION_FILES) | sort -u >> $@.tmp
 endif

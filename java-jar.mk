@@ -43,7 +43,9 @@ JAR_FILE = $(WORK)/$(ARTIFACT_ID)-$(VERSION).jar
 JARX := $(JAR)
 JARX += --create
 JARX += --file $(JAR_FILE)
+ifneq ($(JAR_MODE),class-path)
 JARX += --module-version $(VERSION)
+endif
 JARX += -C $(CLASS_OUTPUT)
 JARX += .
 
