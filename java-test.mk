@@ -48,6 +48,9 @@ TEST_PATH_DELIMITER := $(CLASS_PATH_SEPARATOR)
 ## test java command
 TEST_JAVAX := $(JAVA)
 TEST_JAVAX += --class-path @$(TEST_RUNTIME_PATH)
+ifdef TEST_ADD_EXPORTS
+TEST_JAVAX += $(foreach export,$(TEST_ADD_EXPORTS),--add-exports $(export))
+endif
 TEST_JAVAX += $(TEST_MAIN)
 TEST_JAVAX += $(TEST_RUNTIME_OUTPUT)
 
@@ -101,7 +104,10 @@ test: $(TEST_RUNTIME_REQS)
 
 .PHONY: test@clean
 test@clean:
-	rm -f $(TEST_RUNTIME_MARKER) $(TEST_RUNTIME_MODULE_PATH)
+	rm -f $(TEST_RUN_MARKER) $(TEST_RUNTIME_PATH)
+	
+.PHONY: re-test
+re-test: test@clean test
 
 $(TEST_RUNTIME_PATH): $(TEST_RUNTIME_RESOLUTION_FILES)
 	echo $(CLASS_OUTPUT) > $@.tmp

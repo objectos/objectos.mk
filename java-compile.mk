@@ -103,6 +103,9 @@ compile: $(COMPILE_MARKER)
 compile@clean:
 	rm -f $(COMPILE_MARKER) $(COMPILE_PATH)
 
+.PHONY: re-compile
+re-compile: compile@clean compile
+
 $(COMPILE_PATH): $(COMPILE_RESOLUTION_FILES)
 	cat $(COMPILE_RESOLUTION_FILES) | sort -u > $@.tmp
 	cat $@.tmp | paste --delimiter='$(COMPILE_PATH_DELIMITER)' --serial > $@

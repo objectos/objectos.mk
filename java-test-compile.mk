@@ -85,6 +85,9 @@ test-compile: $(TEST_COMPILE_MARKER)
 test-compile@clean:
 	rm -f $(TEST_COMPILE_CLASS_PATH) $(TEST_COMPILE_MARKER)
 
+.PHONY: re-test-compile
+re-test-compile: test-compile@clean test-compile
+
 $(TEST_COMPILE_CLASS_PATH): $(TEST_COMPILE_RESOLUTION_FILES)
 	echo $(CLASS_OUTPUT) > $@.tmp
 ifdef COMPILE_RESOLUTION_FILES

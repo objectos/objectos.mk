@@ -75,6 +75,9 @@ $(1)JAVACX += --module-path @$$($(1)MODULE_PATH)
 endif
 $(1)JAVACX += --patch-module $(1)=$$@
 $(1)JAVACX += $$($(1)MODULE_INFO)
+ifdef $(1)_EXTRAS
+$(1)JAVACX += $$($(1)_EXTRAS)
+endif
 
 #
 # foo
