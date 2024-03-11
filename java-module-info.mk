@@ -111,7 +111,6 @@ $$($(1)TMP): $$($(1)SRC_RESOLUTION_FILE) $$($(1)MODULE_INFO)
 	rm -rf $$($(1)CLASS_OUTPUT)
 	$$($(1)JAVACX)
 	$(JAR) --update --file=$$@ -C $$($(1)CLASS_OUTPUT) .
-	$(JAR) --describe-module --file=$$@
 
 $$($(1)JAR_FILE): $$($(1)TMP)
 	@mkdir --parents $$(@D)
