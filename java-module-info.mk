@@ -54,11 +54,11 @@ endif
 $(1)SRC_JAR_FILE := $$(call gav-to-local,$(3))
 
 ## the jdeps command
-$(1)JDEPSX := $$(JDEPS)
+$(1)JDEPSX  = $$(JDEPS)
 ifdef $(1)MODULE_PATH
-$(1)JDEPSX += --module-path @$$($(1)MODULE_PATH)
+$(1)JDEPSX += --module-path $$(file < $$($(1)MODULE_PATH))
 endif
-ifeq ($$(IGNORE_MISSING_DEPS),1)
+ifeq ($$($(1)_IGNORE_MISSING_DEPS),1)
 $(1)JDEPSX += --ignore-missing-deps
 endif
 $(1)JDEPSX += --generate-module-info modules
@@ -81,7 +81,7 @@ $(1)JAVACX += $$($(1)MODULE_INFO)
 #
 
 .PHONY: $(1)
-$(1): $$($(1)JAR_FILE)
+$(1): $$($(1)RESOLUTION_FILE)
 
 #
 # foo@clean
@@ -89,10 +89,11 @@ $(1): $$($(1)JAR_FILE)
 
 .PHONY: $(1)@clean
 $(1)@clean:
-	rm -f $$($(1)JAR_FILE) $$($(1)RESOLUTION_FILE)
+	rm -f $$($(1)JAR_FILE) $$($(1)RESOLUTION_FILE) $$($(1)TMP) $$($(1)MODULE_PATH)
 
-$$($(1)MODULE_PATH):
-	echo "implement me!"
+$$($(1)MODULE_PATH): $$($(1)DEPS_RESOLUTIONS)
+	cat $$^ | sort -u > $$@.tmp
+	cat $$@.tmp | paste --delimiter='$(MODULE_PATH_SEPARATOR)' --serial > $$@
 
 #
 # Generates the module-info.java file
@@ -113,9 +114,14 @@ $$($(1)TMP): $$($(1)SRC_RESOLUTION_FILE) $$($(1)MODULE_INFO)
 	$(JAR) --describe-module --file=$$@
 
 $$($(1)JAR_FILE): $$($(1)TMP)
+	@mkdir --parents $$(@D)
 	cp $$< $$@
 
 $$($(1)RESOLUTION_FILE): $$($(1)JAR_FILE)
-	echo "$$<" > $$@ 
-
+	@mkdir --parents $$(@D)
+	echo "$$<" > $$@
+ifdef $(1)DEPS_RESOLUTIONS
+	cat $$($(1)DEPS_RESOLUTIONS) >> $$@
+endif
+	
 endef

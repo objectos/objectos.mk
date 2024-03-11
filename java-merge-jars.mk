@@ -45,6 +45,13 @@ $(1)RESOLUTION_FILES := $$(call to-resolution-files,$(3))
 # targets
 #
 
+.PHONY: $(1)
+$(1): $$($(1)RESOLUTION_FILE) 
+
+.PHONY: $(1)@clean
+$(1)@clean:
+	rm -rf $$($(1)RESOLUTION_FILE) $$($(1)RESOLUTION_TMP) $$($(1)JAR) $$($(1)TMP)
+
 $$($(1)TMP):
 	for f in $$($(1)LOCALS); do \
 		unzip $$$${f} -d $$@; \
