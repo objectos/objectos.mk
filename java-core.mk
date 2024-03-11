@@ -38,6 +38,9 @@ JAR := $(JAVA_HOME_BIN)/jar
 ## javadoc command
 JAVADOC := $(JAVA_HOME_BIN)/javadoc
 
+## jdeps command
+JDEPS := $(JAVA_HOME_BIN)/jdeps
+
 #
 # java related functions
 #
@@ -70,6 +73,32 @@ MODULE_PATH_SEPARATOR := $(colon)
 ## syntax:
 ## $(call module-path,[list of deps])
 module-path = $(subst $(space),$(MODULE_PATH_SEPARATOR),$(1))
+
+## gav-to-artifact: convert a GAV into a relative path name
+##
+## syntax:
+## $(call gav-to-artifact,com.example/foo/1.2.3)
+## => com/example/foo/1.2.3/foo-1.2.3
+gav-to-artifact = $(call mk-dependency,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3))
+
+## gav-to-resolution-file:
+##
+## syntax:
+## RESOLUTION_DIR := /tmp/resolution
+## $(call gav-to-resolution-file,com.example/foo/1.2.3)
+## => /tmp/resolution/com/example/foo/1.2.3/foo-1.2.3
+gav-to-resolution-file = $(RESOLUTION_DIR)/$(1)
+
+## deps-to-local
+##
+## syntax:
+## LOCAL_REPO_PATH := /tmp/repo
+## DEPS := com.example/foo/1.2.3
+## DEPS += br.com.objectos/bar/3.4.5
+## $(call deps-to-local,$(DEPS))
+## => /tmp/repo/com/example/foo/1.2.3/foo-1.2.3.jar
+## => /tmp/repo/br/com/objectos/bar/3.4.5/bar-3.4.5.jar
+deps-to-local = $(foreach dep,$(1),$(call gav-to-local,$(dep)))
 
 ## dependency function
 ## 
@@ -164,7 +193,7 @@ REMOTE_REPO_WGETX += --no-verbose
 #
 
 $(LOCAL_REPO_PATH)/%.jar:	
-	$(REMOTE_REPO_WGETX) --output $@ $(@:$(LOCAL_REPO_PATH)/%.jar=$(REMOTE_REPO_URL)/%.jar)
+	$(REMOTE_REPO_WGETX) $(@:$(LOCAL_REPO_PATH)/%.jar=$(REMOTE_REPO_URL)/%.jar)
 
 $(RESOLVER_JAVA):
 	wget --no-verbose $(RESOLVER_URL) 
