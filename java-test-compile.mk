@@ -91,12 +91,12 @@ re-test-compile: test-compile@clean test-compile
 $(TEST_COMPILE_CLASS_PATH): $(TEST_COMPILE_RESOLUTION_FILES)
 	echo $(CLASS_OUTPUT) > $@.tmp
 ifdef COMPILE_RESOLUTION_FILES
-	cat $(COMPILE_RESOLUTION_FILES) | sort -u >> $@.tmp
+	cat $(COMPILE_RESOLUTION_FILES) >> $@.tmp
 endif
 ifdef TEST_COMPILE_RESOLUTION_FILES
-	cat $(TEST_COMPILE_RESOLUTION_FILES) | sort -u >> $@.tmp
+	cat $(TEST_COMPILE_RESOLUTION_FILES) >> $@.tmp
 endif
-	cat $@.tmp | paste --delimiter='$(CLASS_PATH_SEPARATOR)' --serial > $@
+	$(call uniq-resolution-files,$@.tmp) | paste --delimiter='$(CLASS_PATH_SEPARATOR)' --serial > $@
 
 $(TEST_COMPILE_MARKER): $(TEST_COMPILE_REQS) 
 	$(TEST_JAVACX)

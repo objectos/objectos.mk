@@ -41,6 +41,11 @@ $(1)LOCALS := $$(call deps-to-local,$(3))
 ## resolution files
 $(1)RESOLUTION_FILES := $$(call to-resolution-files,$(3))
 
+## cleanup
+ifdef $(1)JAR_EXCLUDES
+$(1)JAR_RM := rm -r $$(foreach f,$$($(1)JAR_EXCLUDES),$$($(1)TMP)/$$(f))
+endif
+
 #
 # targets
 #
@@ -51,14 +56,20 @@ $(1): $$($(1)RESOLUTION_FILE)
 .PHONY: $(1)@clean
 $(1)@clean:
 	rm -rf $$($(1)RESOLUTION_FILE) $$($(1)RESOLUTION_TMP) $$($(1)JAR) $$($(1)TMP)
+	
+.PHONY: re-$(1)
+re-$(1): $(1)@clean $(1)
 
 $$($(1)TMP):
 	for f in $$($(1)LOCALS); do \
-		unzip $$$${f} -d $$@; \
-	done	
+		unzip -o $$$${f} -d $$@; \
+	done
 
 $$($(1)JAR): $$($(1)TMP)
-	$(JAR) --create --file=$$@ -C $$($(1)TMP) .
+ifdef $(1)JAR_RM
+	$$($(1)JAR_RM)
+endif
+	$$(JAR) --create --file=$$@ -C $$($(1)TMP) .
 
 $$($(1)RESOLUTION_TMP): $$($(1)RESOLUTION_FILES) $$($(1)JAR)
 	echo $$($(1)JAR) > $$@

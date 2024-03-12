@@ -107,7 +107,7 @@ compile@clean:
 re-compile: compile@clean compile
 
 $(COMPILE_PATH): $(COMPILE_RESOLUTION_FILES)
-	cat $(COMPILE_RESOLUTION_FILES) | sort -u > $@.tmp
+	$(call uniq-resolution-files,$(COMPILE_RESOLUTION_FILES)) > $@.tmp
 	cat $@.tmp | paste --delimiter='$(COMPILE_PATH_DELIMITER)' --serial > $@
 
 $(COMPILE_MARKER): $(COMPILE_REQS)

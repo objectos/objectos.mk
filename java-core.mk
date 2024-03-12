@@ -117,6 +117,9 @@ dep-to-jar = $(foreach dep,$(1),$(call gav-to-local,$(dep)))
 mk-resolution-file = $(RESOLUTION_DIR)/$(1)
 to-resolution-files = $(foreach dep,$(1),$(call mk-resolution-file,$(dep)))
 
+## uniq-resolution-files
+uniq-resolution-files = cat -n $(1) | sort -uk2 | sort -n | cut -f2-
+
 #
 # Dependencies related options & functions
 #

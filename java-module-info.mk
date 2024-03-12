@@ -53,6 +53,9 @@ endif
 ## src jar file
 $(1)SRC_JAR_FILE := $$(call gav-to-local,$(3))
 
+## relocated jar file
+$(1)RELOCATED := $$(WORK)/relocated/$(1).jar
+
 ## the jdeps command
 $(1)JDEPSX  = $$(JDEPS)
 ifdef $(1)MODULE_PATH
@@ -62,7 +65,7 @@ ifeq ($$($(1)_IGNORE_MISSING_DEPS),1)
 $(1)JDEPSX += --ignore-missing-deps
 endif
 $(1)JDEPSX += --generate-module-info modules
-$(1)JDEPSX += $$($(1)SRC_JAR_FILE)
+$(1)JDEPSX += $$($(1)RELOCATED)
 
 ## javac output directory
 $(1)CLASS_OUTPUT := $$(WORK)/$(1)
@@ -92,7 +95,10 @@ $(1): $$($(1)RESOLUTION_FILE)
 
 .PHONY: $(1)@clean
 $(1)@clean:
-	rm -f $$($(1)JAR_FILE) $$($(1)RESOLUTION_FILE) $$($(1)TMP) $$($(1)MODULE_PATH)
+	rm -f $$($(1)JAR_FILE) $$($(1)RESOLUTION_FILE) $$($(1)TMP) $$($(1)MODULE_PATH) $$($(1)RELOCATED)
+	
+.PHONY: re-$(1)
+re-$(1): $(1)@clean $(1)
 
 $$($(1)MODULE_PATH): $$($(1)DEPS_RESOLUTIONS)
 	cat $$^ | sort -u > $$@.tmp
@@ -102,7 +108,11 @@ $$($(1)MODULE_PATH): $$($(1)DEPS_RESOLUTIONS)
 # Generates the module-info.java file
 #
 
-$$($(1)MODULE_INFO): $$($(1)MODULE_PATH)
+$$($(1)RELOCATED):
+	@mkdir --parents $$(@D)
+	cp $$($(1)SRC_JAR_FILE) $$@
+
+$$($(1)MODULE_INFO): $$($(1)MODULE_PATH) $$($(1)RELOCATED)
 	$$($(1)JDEPSX)
 
 #
