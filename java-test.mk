@@ -40,20 +40,31 @@ TEST_RUNTIME_OUTPUT := $(WORK)/test-output
 ## test execution marker
 TEST_RUN_MARKER = $(TEST_RUNTIME_OUTPUT)/index.html
 
-ifeq ($(TEST_RUNTIME_MODE),class-path)
-
-## test delimiter
-TEST_PATH_DELIMITER := $(CLASS_PATH_SEPARATOR)
+## test arg files
+#TEST_ARGFILES
 
 ## test java command
 TEST_JAVAX := $(JAVA)
-TEST_JAVAX += --class-path @$(TEST_RUNTIME_PATH)
+ifdef TEST_ARGFILES
+TEST_JAVAX += $(foreach argfile,$(TEST_ARGFILES),@$(argfile))
+endif
 ifdef TEST_ADD_EXPORTS
 TEST_JAVAX += $(foreach export,$(TEST_ADD_EXPORTS),--add-exports $(export))
 endif
 ifdef TEST_ADD_OPENS
 TEST_JAVAX += $(foreach opens,$(TEST_ADD_OPENS),--add-opens $(opens))
 endif
+ifdef TEST_ADD_READS
+TEST_JAVAX += $(foreach read,$(TEST_ADD_READS),--add-reads $(read))
+endif
+
+ifeq ($(TEST_RUNTIME_MODE),class-path)
+
+## test delimiter
+TEST_PATH_DELIMITER := $(CLASS_PATH_SEPARATOR)
+
+## test java command
+TEST_JAVAX += --class-path @$(TEST_RUNTIME_PATH)
 TEST_JAVAX += $(TEST_MAIN)
 TEST_JAVAX += $(TEST_RUNTIME_OUTPUT)
 
@@ -76,16 +87,9 @@ endif
 endif
 
 ## test java command
-TEST_JAVAX := $(JAVA)
 TEST_JAVAX += --module-path @$(TEST_RUNTIME_PATH)
 ifdef TEST_ADD_MODULES
 TEST_JAVAX += $(foreach mod,$(TEST_ADD_MODULES),--add-modules $(mod))
-endif
-ifdef TEST_ADD_EXPORTS
-TEST_JAVAX += $(foreach export,$(TEST_ADD_EXPORTS),--add-exports $(export))
-endif
-ifdef TEST_ADD_READS
-TEST_JAVAX += $(foreach read,$(TEST_ADD_READS),--add-reads $(read))
 endif
 TEST_JAVAX += --patch-module $(TEST_MODULE)=$(TEST_CLASS_OUTPUT)
 TEST_JAVAX += --module $(TEST_MODULE)/$(TEST_MAIN)
