@@ -51,6 +51,9 @@ TEST_JAVAX += --class-path @$(TEST_RUNTIME_PATH)
 ifdef TEST_ADD_EXPORTS
 TEST_JAVAX += $(foreach export,$(TEST_ADD_EXPORTS),--add-exports $(export))
 endif
+ifdef TEST_ADD_OPENS
+TEST_JAVAX += $(foreach opens,$(TEST_ADD_OPENS),--add-opens $(opens))
+endif
 TEST_JAVAX += $(TEST_MAIN)
 TEST_JAVAX += $(TEST_RUNTIME_OUTPUT)
 
@@ -78,11 +81,11 @@ TEST_JAVAX += --module-path @$(TEST_RUNTIME_PATH)
 ifdef TEST_ADD_MODULES
 TEST_JAVAX += $(foreach mod,$(TEST_ADD_MODULES),--add-modules $(mod))
 endif
-ifdef TEST_ADD_READS
-TEST_JAVAX += $(foreach read,$(TEST_ADD_READS),--add-reads $(read))
-endif
 ifdef TEST_ADD_EXPORTS
 TEST_JAVAX += $(foreach export,$(TEST_ADD_EXPORTS),--add-exports $(export))
+endif
+ifdef TEST_ADD_READS
+TEST_JAVAX += $(foreach read,$(TEST_ADD_READS),--add-reads $(read))
 endif
 TEST_JAVAX += --patch-module $(TEST_MODULE)=$(TEST_CLASS_OUTPUT)
 TEST_JAVAX += --module $(TEST_MODULE)/$(TEST_MAIN)
