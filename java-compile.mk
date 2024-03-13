@@ -92,6 +92,24 @@ COMPILE_REQS += $(COMPILE_PATH)
 endif
 COMPILE_REQS += $(SOURCES)
 
+## resources
+# RESOURCES :=
+
+ifdef RESOURCES
+## test resources "source"
+RESOURCES_SRC = $(shell find ${RESOURCES} -type f -print)
+
+## test resources "output"
+RESOURCES_OUT = $(RESOURCES_SRC:$(RESOURCES)/%=$(CLASS_OUTPUT)/%)
+
+## target to copy test resources
+$(RESOURCES_OUT): $(CLASS_OUTPUT)/%: $(RESOURCES)/%
+	@mkdir --parents $(@D)
+	cp $< $@
+	
+COMPILE_REQS += $(RESOURCES_OUT)
+endif
+
 #
 # compilation targets
 #

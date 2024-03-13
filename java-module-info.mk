@@ -24,14 +24,17 @@
 
 define module-info
 
-## tmp JAR file name
-$(1)TMP := $$(WORK)/$(1).jar
+## final resolution file
+$(1)RESOLUTION_FILE := $$(call gav-to-resolution-file,$(2))
 
 ## final JAR file name
 $(1)JAR_FILE := $$(call gav-to-local,$(2))
 
-## final resolution file
-$(1)RESOLUTION_FILE := $$(call gav-to-resolution-file,$(2))
+## work modified JAR file name
+$(1)JAR_MOD := $$(WORK)/$(1).jar
+
+## work source JAR file name
+$(1)JAR_SRC := $$(WORK)/relocated/$(1).jar
 
 ## module-info.java
 $(1)MODULE_INFO := modules/$(1)/module-info.java
@@ -53,9 +56,6 @@ endif
 ## src jar file
 $(1)SRC_JAR_FILE := $$(call gav-to-local,$(3))
 
-## relocated jar file
-$(1)RELOCATED := $$(WORK)/relocated/$(1).jar
-
 ## the jdeps command
 $(1)JDEPSX  = $$(JDEPS)
 ifdef $(1)MODULE_PATH
@@ -65,10 +65,13 @@ ifeq ($$($(1)_IGNORE_MISSING_DEPS),1)
 $(1)JDEPSX += --ignore-missing-deps
 endif
 $(1)JDEPSX += --generate-module-info modules
-$(1)JDEPSX += $$($(1)RELOCATED)
+$(1)JDEPSX += $$($(1)JAR_SRC)
 
 ## javac output directory
 $(1)CLASS_OUTPUT := $$(WORK)/$(1)
+
+## module-info.class
+$(1)CLASSES := $$($(1)CLASS_OUTPUT)/module-info.class
 
 ## the javac command
 $(1)JAVACX  = $$(JAVAC)
@@ -76,7 +79,7 @@ $(1)JAVACX += -d $$($(1)CLASS_OUTPUT)
 ifdef $(1)MODULE_PATH
 $(1)JAVACX += --module-path @$$($(1)MODULE_PATH)
 endif
-$(1)JAVACX += --patch-module $(1)=$$@
+$(1)JAVACX += --patch-module $(1)=$$($(1)JAR_SRC)
 $(1)JAVACX += $$($(1)MODULE_INFO)
 ifdef $(1)_EXTRAS
 $(1)JAVACX += $$($(1)_EXTRAS)
@@ -95,7 +98,7 @@ $(1): $$($(1)RESOLUTION_FILE)
 
 .PHONY: $(1)@clean
 $(1)@clean:
-	rm -f $$($(1)JAR_FILE) $$($(1)RESOLUTION_FILE) $$($(1)TMP) $$($(1)MODULE_PATH) $$($(1)RELOCATED)
+	rm -f $$($(1)JAR_FILE) $$($(1)RESOLUTION_FILE) $$($(1)TMP) $$($(1)MODULE_PATH)
 	
 .PHONY: re-$(1)
 re-$(1): $(1)@clean $(1)
@@ -104,28 +107,21 @@ $$($(1)MODULE_PATH): $$($(1)DEPS_RESOLUTIONS)
 	cat $$^ | sort -u > $$@.tmp
 	cat $$@.tmp | paste --delimiter='$(MODULE_PATH_SEPARATOR)' --serial > $$@
 
-#
-# Generates the module-info.java file
-#
-
-$$($(1)RELOCATED):
-	@mkdir --parents $$(@D)
+$$($(1)JAR_SRC): $$($(1)SRC_RESOLUTION_FILE)
 	cp $$($(1)SRC_JAR_FILE) $$@
 
-$$($(1)MODULE_INFO): $$($(1)MODULE_PATH) $$($(1)RELOCATED)
+$$($(1)MODULE_INFO):
 	$$($(1)JDEPSX)
 
-#
-# Patches JAR file
-#
-
-$$($(1)TMP): $$($(1)SRC_RESOLUTION_FILE) $$($(1)MODULE_INFO)
-	cp $$($(1)SRC_JAR_FILE) $$@
+$$($(1)CLASSES): $$($(1)MODULE_PATH) $$($(1)JAR_SRC) $$($(1)MODULE_INFO) 
 	rm -rf $$($(1)CLASS_OUTPUT)
 	$$($(1)JAVACX)
+	
+$$($(1)JAR_MOD): $$($(1)CLASSES)
+	cp $$($(1)JAR_SRC) $$@
 	$(JAR) --update --file=$$@ -C $$($(1)CLASS_OUTPUT) .
 
-$$($(1)JAR_FILE): $$($(1)TMP)
+$$($(1)JAR_FILE): $$($(1)JAR_MOD)
 	@mkdir --parents $$(@D)
 	cp $$< $$@
 
