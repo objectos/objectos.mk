@@ -60,7 +60,7 @@ TEST_RESOURCES_OUT = $(TEST_RESOURCES_SRC:$(TEST_RESOURCES)/%=$(TEST_CLASS_OUTPU
 
 ## target to copy test resources
 $(TEST_RESOURCES_OUT): $(TEST_CLASS_OUTPUT)/%: $(TEST_RESOURCES)/%
-	mkdir --parents $(@D)
+	@mkdir --parents $(@D)
 	cp $< $@
 	
 endif
@@ -83,7 +83,7 @@ test-compile: $(TEST_COMPILE_MARKER)
 
 .PHONY: test-compile@clean
 test-compile@clean:
-	rm -f $(TEST_COMPILE_CLASS_PATH) $(TEST_COMPILE_MARKER)
+	rm -rf $(TEST_CLASS_OUTPUT) $(TEST_COMPILE_CLASS_PATH) $(TEST_COMPILE_MARKER)
 
 .PHONY: re-test-compile
 re-test-compile: test-compile@clean test-compile
