@@ -38,30 +38,51 @@ COMPILE_RESOLUTION_FILES := $(call to-resolution-files,$(COMPILE_DEPS))
 COMPILE_PATH := $(WORK)/compile-path
 endif
 
+## annotation processing
+ifdef COMPILE_PROC_DEPS
+## compile proc resolution files
+COMPILE_PROC_RESOLUTION_FILES := $(call to-resolution-files,$(COMPILE_PROC_DEPS))
+
+## compile proc module-path (or class-path)
+COMPILE_PROC_PATH := $(WORK)/compile-proc-path
+
+## annotation processing output
+COMPILE_SOURCE_OUTPUT := $(WORK)/main-generated-sources
+endif
+
 ## common javac options
 JAVACX := $(JAVAC)
 JAVACX += -d $(CLASS_OUTPUT)
 JAVACX += -Xlint:none
 JAVACX += -Xpkginfo:always
+ifdef COMPILE_MAXERRS
+JAVACX += -Xmaxerrs $(COMPILE_MAXERRS)
+endif
 
 ifeq ($(COMPILE_MODE),class-path)
 
-ifdef COMPILE_PATH
 ## path delimiter
 COMPILE_PATH_DELIMITER := $(CLASS_PATH_SEPARATOR)
 
+ifdef COMPILE_PATH
 ## class-path
 JAVACX += --class-path @$(COMPILE_PATH)
 endif
 
 else
 
-ifdef COMPILE_PATH
 ## path delimiter
 COMPILE_PATH_DELIMITER := $(MODULE_PATH_SEPARATOR)
 
+ifdef COMPILE_PATH
 ## module-path
 JAVACX += --module-path @$(COMPILE_PATH)
+endif
+
+ifdef COMPILE_PROC_PATH
+## processing module-path
+JAVACX += --processor-module-path @$(COMPILE_PROC_PATH)
+JAVACX += -s $(COMPILE_SOURCE_OUTPUT)
 endif
 
 ## module version
@@ -87,10 +108,14 @@ COMPILE_MARKER = $(WORK)/compile-marker
 
 ## compilation requirements
 COMPILE_REQS :=
+COMPILE_REQS += $(SOURCES)
 ifdef COMPILE_RESOLUTION_FILES
 COMPILE_REQS += $(COMPILE_PATH)
 endif
-COMPILE_REQS += $(SOURCES)
+ifdef COMPILE_PROC_RESOLUTION_FILES
+COMPILE_REQS += $(COMPILE_PROC_PATH)
+COMPILE_REQS += | $(COMPILE_SOURCE_OUTPUT)
+endif
 
 ## resources
 # RESOURCES :=
@@ -119,7 +144,7 @@ compile: $(COMPILE_MARKER)
 
 .PHONY: compile@clean
 compile@clean:
-	rm -f $(COMPILE_MARKER) $(COMPILE_PATH)
+	rm -rf $(CLASS_OUTPUT) $(COMPILE_MARKER) $(COMPILE_PATH) $(COMPILE_SOURCE_OUTPUT)
 
 .PHONY: re-compile
 re-compile: compile@clean compile
@@ -127,6 +152,13 @@ re-compile: compile@clean compile
 $(COMPILE_PATH): $(COMPILE_RESOLUTION_FILES)
 	$(call uniq-resolution-files,$(COMPILE_RESOLUTION_FILES)) > $@.tmp
 	cat $@.tmp | paste --delimiter='$(COMPILE_PATH_DELIMITER)' --serial > $@
+
+$(COMPILE_PROC_PATH): $(COMPILE_PROC_RESOLUTION_FILES)
+	$(call uniq-resolution-files,$(COMPILE_PROC_RESOLUTION_FILES)) > $@.tmp
+	cat $@.tmp | paste --delimiter='$(COMPILE_PATH_DELIMITER)' --serial > $@
+	
+$(COMPILE_SOURCE_OUTPUT):
+	mkdir --parents $@
 
 $(COMPILE_MARKER): $(COMPILE_REQS)
 	$(JAVACX)
