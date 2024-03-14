@@ -22,11 +22,11 @@
 ECLIPSE_CLASSPATH := .classpath
 
 ## Eclipse classpath template
-define ECLIPSE_CLASSPATH_TMPL
+define eclipse_classpath_tmpl
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="work/main" path="main"/>
-	<classpathentry kind="src" output="work/test" path="test">
+	$(1)<classpathentry kind="src" output="work/test" path="test">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>
@@ -37,12 +37,28 @@ define ECLIPSE_CLASSPATH_TMPL
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="eclipse-bin"/>
-$(1)$(2)</classpath>
+$(2)$(3)</classpath>
 endef
 
 ## Eclipse classpath entry template
 define eclipse_classpath_lib
 	<classpathentry kind="lib" path="$(1)"/>
+
+endef
+
+## Eclipse main generated sources source folder
+define eclipse_main_generated_sources
+<classpathentry kind="src" output="work/main" path="work/main-generated-sources"/>
+	$(empty)
+endef
+
+## Eclipse modulepath entry template
+define eclipse_modulepath_lib
+	<classpathentry kind="lib" path="$(1)">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 
 endef
 
@@ -55,16 +71,28 @@ define eclipse_classpath_testlib
 
 endef
 
-## compile classpath libraries
-ifdef COMPILE_RESOLUTION_FILES
-ECLIPSE_CLASSPATH_LIBS = $(foreach jar,$(sort $(foreach lib,$(COMPILE_RESOLUTION_FILES),$(file < $(lib)))),$(call eclipse_classpath_lib,$(jar)))
+ifdef COMPILE_SOURCE_OUTPUT
+ECLIPSE_MAIN_GENERATED_SOURCES := $(eclipse_main_generated_sources)
+endif
+
+## Eclipse compile module path
+ifdef ECLIPSE_COMPILE_DEPS
+ECLIPSE_COMPILE_RESOLUTION_FILES := $(call to-resolution-files,$(ECLIPSE_COMPILE_DEPS))
+
+ECLIPSE_COMPILE_PATHS := $(sort $(foreach f,$(ECLIPSE_COMPILE_RESOLUTION_FILES),$(file < $(f))))
+
+ECLIPSE_COMPILE_LIBS = $(foreach jar,$(ECLIPSE_COMPILE_PATHS),$(call eclipse_modulepath_lib,$(jar)))
 endif
 
 ## test classpath libraries
-ifdef TEST_COMPILE_RESOLUTION_FILES
-ECLIPSE_CLASSPATH_TESTLIBS = $(foreach jar,$(sort $(foreach lib,$(TEST_COMPILE_RESOLUTION_FILES),$(file < $(lib)))),$(call eclipse_classpath_testlib,$(jar)))
+ifdef ECLIPSE_TEST_COMPILE_DEPS
+ECLIPSE_TEST_COMPILE_RESOLUTION_FILES := $(call to-resolution-files,$(ECLIPSE_TEST_COMPILE_DEPS))
+
+ECLIPSE_TEST_COMPILE_PATHS := $(sort $(foreach f,$(ECLIPSE_TEST_COMPILE_RESOLUTION_FILES),$(file < $(f))))
+
+ECLIPSE_TEST_COMPILE_LIBS = $(foreach jar,$(ECLIPSE_TEST_COMPILE_PATHS),$(call eclipse_classpath_testlib,$(jar)))
 endif
 
 .PHONY: eclipse-classpath
 eclipse-classpath:
-	$(file > $(ECLIPSE_CLASSPATH),$(call ECLIPSE_CLASSPATH_TMPL,$(ECLIPSE_CLASSPATH_LIBS),$(ECLIPSE_CLASSPATH_TESTLIBS)))
+	$(file > $(ECLIPSE_CLASSPATH),$(call eclipse_classpath_tmpl,$(ECLIPSE_MAIN_GENERATED_SOURCES),$(ECLIPSE_COMPILE_LIBS),$(ECLIPSE_TEST_COMPILE_LIBS)))
