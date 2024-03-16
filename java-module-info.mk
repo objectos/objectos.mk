@@ -108,6 +108,7 @@ $$($(1)MODULE_PATH): $$($(1)DEPS_RESOLUTIONS)
 	cat $$@.tmp | paste --delimiter='$(MODULE_PATH_SEPARATOR)' --serial > $$@
 
 $$($(1)JAR_SRC): $$($(1)SRC_RESOLUTION_FILE)
+	@mkdir --parents $$(@D)
 	cp $$($(1)SRC_JAR_FILE) $$@
 
 $$($(1)MODULE_INFO):

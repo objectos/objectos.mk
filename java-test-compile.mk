@@ -41,7 +41,6 @@ TEST_COMPILE_CLASS_PATH := $(WORK)/test-compile-class-path
 ## test javac command
 TEST_JAVACX := $(JAVAC)
 TEST_JAVACX += -d $(TEST_CLASS_OUTPUT)
-TEST_JAVACX += -Xlint:all
 TEST_JAVACX += --class-path @$(TEST_COMPILE_CLASS_PATH)
 TEST_JAVACX += --release $(JAVA_RELEASE)
 TEST_JAVACX += --source-path $(TEST)
