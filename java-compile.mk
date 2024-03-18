@@ -173,4 +173,7 @@ $(COMPILE_MARKER): $(COMPILE_REQS)
 	if [ -n "$(DIRTY)" ]; then \
 		$(JAVACX); \
 	fi
-	touch $@
+	echo "$(CLASS_OUTPUT)" > $@
+ifdef COMPILE_RESOLUTION_FILES
+	$(call uniq-resolution-files,$(COMPILE_RESOLUTION_FILES)) >> $@
+endif
