@@ -19,13 +19,19 @@
 #
 
 ## source directory
-MAIN = main
+MAIN := main
 
 ## source files
-SOURCES = $(shell find ${MAIN} -type f -name '*.java' -print)
+SOURCES := $(shell find ${MAIN} -type f -name '*.java' -print)
+
+## source files modified since last compilation (dynamically evaluated)
+DIRTY :=
 
 ## class output path
-CLASS_OUTPUT = $(WORK)/main
+CLASS_OUTPUT := $(WORK)/main
+
+## compiled classes
+CLASSES = $(SOURCES:$(MAIN)/%.java=$(CLASS_OUTPUT)/%.class)
 
 ## compile dependencies
 # COMPILE_DEPS := 
@@ -51,7 +57,7 @@ COMPILE_SOURCE_OUTPUT := $(WORK)/main-generated-sources
 endif
 
 ## common javac options
-JAVACX := $(JAVAC)
+JAVACX  = $(JAVAC)
 JAVACX += -d $(CLASS_OUTPUT)
 JAVACX += -Xlint:none
 JAVACX += -Xpkginfo:always
@@ -101,14 +107,14 @@ endif
 ## common javac trailing options
 JAVACX += --release $(JAVA_RELEASE)
 JAVACX += --source-path $(MAIN)
-JAVACX += $(SOURCES)
+JAVACX += $(DIRTY)
 
 ## compilation marker
 COMPILE_MARKER = $(WORK)/compile-marker
 
 ## compilation requirements
 COMPILE_REQS :=
-COMPILE_REQS += $(SOURCES)
+COMPILE_REQS += $(CLASSES)
 ifdef COMPILE_RESOLUTION_FILES
 COMPILE_REQS += $(COMPILE_PATH)
 endif
@@ -160,6 +166,11 @@ $(COMPILE_PROC_PATH): $(COMPILE_PROC_RESOLUTION_FILES)
 $(COMPILE_SOURCE_OUTPUT):
 	mkdir --parents $@
 
+$(CLASSES): $(CLASS_OUTPUT)/%.class: $(MAIN)/%.java
+	$(eval DIRTY += $$<)
+
 $(COMPILE_MARKER): $(COMPILE_REQS)
-	$(JAVACX)
+	if [ -n "$(DIRTY)" ]; then \
+		$(JAVACX); \
+	fi
 	touch $@
