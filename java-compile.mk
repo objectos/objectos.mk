@@ -45,15 +45,15 @@ COMPILE_PATH := $(WORK)/compile-path
 endif
 
 ## annotation processing
-ifdef COMPILE_PROC_DEPS
+ifdef PROCESSING_DEPS
 ## compile proc resolution files
-COMPILE_PROC_RESOLUTION_FILES := $(call to-resolution-files,$(COMPILE_PROC_DEPS))
+PROCESSING_RESOLUTION_FILES := $(call to-resolution-files,$(PROCESSING_DEPS))
 
 ## compile proc module-path (or class-path)
-COMPILE_PROC_PATH := $(WORK)/compile-proc-path
+PROCESSING_PATH := $(WORK)/compile-proc-path
 
 ## annotation processing output
-COMPILE_SOURCE_OUTPUT := $(WORK)/main-generated-sources
+PROCESSING_OUTPUT := $(WORK)/main-generated-sources
 endif
 
 ## common javac options
@@ -85,10 +85,10 @@ ifdef COMPILE_PATH
 JAVACX += --module-path @$(COMPILE_PATH)
 endif
 
-ifdef COMPILE_PROC_PATH
+ifdef PROCESSING_PATH
 ## processing module-path
-JAVACX += --processor-module-path @$(COMPILE_PROC_PATH)
-JAVACX += -s $(COMPILE_SOURCE_OUTPUT)
+JAVACX += --processor-module-path @$(PROCESSING_PATH)
+JAVACX += -s $(PROCESSING_OUTPUT)
 endif
 
 ## module version
@@ -118,9 +118,9 @@ COMPILE_REQS += $(CLASSES)
 ifdef COMPILE_RESOLUTION_FILES
 COMPILE_REQS += $(COMPILE_PATH)
 endif
-ifdef COMPILE_PROC_RESOLUTION_FILES
-COMPILE_REQS += $(COMPILE_PROC_PATH)
-COMPILE_REQS += | $(COMPILE_SOURCE_OUTPUT)
+ifdef PROCESSING_RESOLUTION_FILES
+COMPILE_REQS += $(PROCESSING_PATH)
+COMPILE_REQS += | $(PROCESSING_OUTPUT)
 endif
 
 ## resources
@@ -150,7 +150,7 @@ compile: $(COMPILE_MARKER)
 
 .PHONY: compile@clean
 compile@clean:
-	rm -rf $(CLASS_OUTPUT) $(COMPILE_MARKER) $(COMPILE_PATH) $(COMPILE_SOURCE_OUTPUT)
+	rm -rf $(CLASS_OUTPUT) $(COMPILE_MARKER) $(COMPILE_PATH) $(PROCESSING_OUTPUT)
 
 .PHONY: re-compile
 re-compile: compile@clean compile
@@ -159,11 +159,11 @@ $(COMPILE_PATH): $(COMPILE_RESOLUTION_FILES)
 	$(call uniq-resolution-files,$(COMPILE_RESOLUTION_FILES)) > $@.tmp
 	cat $@.tmp | paste --delimiter='$(COMPILE_PATH_DELIMITER)' --serial > $@
 
-$(COMPILE_PROC_PATH): $(COMPILE_PROC_RESOLUTION_FILES)
-	$(call uniq-resolution-files,$(COMPILE_PROC_RESOLUTION_FILES)) > $@.tmp
+$(PROCESSING_PATH): $(PROCESSING_RESOLUTION_FILES)
+	$(call uniq-resolution-files,$(PROCESSING_RESOLUTION_FILES)) > $@.tmp
 	cat $@.tmp | paste --delimiter='$(COMPILE_PATH_DELIMITER)' --serial > $@
 	
-$(COMPILE_SOURCE_OUTPUT):
+$(PROCESSING_OUTPUT):
 	mkdir --parents $@
 
 $(CLASSES): $(CLASS_OUTPUT)/%.class: $(MAIN)/%.java
