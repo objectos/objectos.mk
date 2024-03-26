@@ -27,11 +27,14 @@ SOURCES := $(shell find ${MAIN} -type f -name '*.java' -print)
 ## source files modified since last compilation (dynamically evaluated)
 DIRTY :=
 
+## holds the list of files to be compiled 
+COMPILE_SOURCES := $(WORK)/compile-sources
+
 ## class output path
 CLASS_OUTPUT := $(WORK)/main
 
 ## compiled classes
-CLASSES = $(SOURCES:$(MAIN)/%.java=$(CLASS_OUTPUT)/%.class)
+CLASSES := $(SOURCES:$(MAIN)/%.java=$(CLASS_OUTPUT)/%.class)
 
 ## compile dependencies
 # COMPILE_DEPS := 
@@ -105,9 +108,12 @@ JAVA_RELEASE := 21
 endif
 
 ## common javac trailing options
+ifeq ($(ENABLE_PREVIEW),1)
+JAVACX += --enable-preview
+endif
 JAVACX += --release $(JAVA_RELEASE)
 JAVACX += --source-path $(MAIN)
-JAVACX += $(DIRTY)
+JAVACX += @$(COMPILE_SOURCES)
 
 ## compilation marker
 COMPILE_MARKER = $(WORK)/compile-marker
@@ -165,12 +171,13 @@ $(PROCESSING_PATH): $(PROCESSING_RESOLUTION_FILES)
 	
 $(PROCESSING_OUTPUT):
 	mkdir --parents $@
-
+	
 $(CLASSES): $(CLASS_OUTPUT)/%.class: $(MAIN)/%.java
 	$(eval DIRTY += $$<)
 
 $(COMPILE_MARKER): $(COMPILE_REQS)
-	if [ -n "$(DIRTY)" ]; then \
+	@echo -n "$(strip $(DIRTY))" > $(COMPILE_SOURCES)
+	if [ -s $(COMPILE_SOURCES) ]; then \
 		$(JAVACX); \
 	fi
 	echo "$(CLASS_OUTPUT)" > $@

@@ -41,6 +41,9 @@ JAVADOC := $(JAVA_HOME_BIN)/javadoc
 ## jdeps command
 JDEPS := $(JAVA_HOME_BIN)/jdeps
 
+## jlink command
+JLINK := $(JAVA_HOME_BIN)/jlink
+
 #
 # java related functions
 #

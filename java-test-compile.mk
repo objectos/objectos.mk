@@ -42,6 +42,9 @@ TEST_COMPILE_CLASS_PATH := $(WORK)/test-compile-class-path
 TEST_JAVACX := $(JAVAC)
 TEST_JAVACX += -d $(TEST_CLASS_OUTPUT)
 TEST_JAVACX += --class-path @$(TEST_COMPILE_CLASS_PATH)
+ifeq ($(ENABLE_PREVIEW),1)
+TEST_JAVACX += --enable-preview
+endif
 TEST_JAVACX += --release $(JAVA_RELEASE)
 TEST_JAVACX += --source-path $(TEST)
 TEST_JAVACX += $(TEST_SOURCES)

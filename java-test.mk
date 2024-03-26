@@ -57,6 +57,9 @@ endif
 ifdef TEST_ADD_READS
 TEST_JAVAX += $(foreach read,$(TEST_ADD_READS),--add-reads $(read))
 endif
+ifeq ($(ENABLE_PREVIEW),1)
+TEST_JAVAX += --enable-preview
+endif
 
 ifeq ($(TEST_RUNTIME_MODE),class-path)
 
