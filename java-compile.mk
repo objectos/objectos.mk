@@ -19,7 +19,9 @@
 #
 
 ## source directory
+ifndef MAIN
 MAIN := main
+endif
 
 ## source files
 SOURCES := $(shell find ${MAIN} -type f -name '*.java' -print)
@@ -119,7 +121,9 @@ JAVACX += @$(COMPILE_SOURCES)
 COMPILE_MARKER = $(WORK)/compile-marker
 
 ## compilation requirements
+ifndef COMPILE_REQS
 COMPILE_REQS :=
+endif
 COMPILE_REQS += $(CLASSES)
 ifdef COMPILE_RESOLUTION_FILES
 COMPILE_REQS += $(COMPILE_PATH)
