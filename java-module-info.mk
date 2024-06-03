@@ -64,6 +64,9 @@ endif
 ifeq ($$($(1)_IGNORE_MISSING_DEPS),1)
 $(1)JDEPSX += --ignore-missing-deps
 endif
+ifdef $(1)_MULTI_RELEASE
+$(1)JDEPSX += --multi-release $$($(1)_MULTI_RELEASE)
+endif
 $(1)JDEPSX += --generate-module-info modules
 $(1)JDEPSX += $$($(1)JAR_SRC)
 
