@@ -21,7 +21,23 @@
 # 
 # Requirements:
 #
-# - you must provide the pom template $$(MODULE)/pom.xml.tmpl
+# - you must provide a mk-pom function
+
+ifndef mk-pom
+$(error The required mk-pom function was not defined)
+endif
+
+ifndef ARTIFACT_ID
+$(error The required variable ARTIFACT_ID was not defined)
+endif
+
+ifndef VERSION
+$(error The required variable VERSION was not defined)
+endif
+
+ifndef WORK
+$(error Required common-clean.mk was not included)
+endif
 
 define POM_DEPENDENCY
 		<dependency>
@@ -34,31 +50,22 @@ endef
 
 mk-pom-dep = $(call POM_DEPENDENCY,$(call word-solidus,$(1),1),$(call word-solidus,$(1),2),$(call word-solidus,$(1),3))
 
-define POM_TASK
-
-## pom source
-ifndef mk-pom
-$$(error The required mk-pom function was not defined)
-endif
-
 ## pom file
-$(1)POM_FILE = $$($(1)WORK)/$$($(1)ARTIFACT_ID)-$$($(1)VERSION).pom
+POM_FILE := $(WORK)/$(ARTIFACT_ID)-$(VERSION).pom
 
 ## deps
-$(1)pom_gavs=$$($(1)COMPILE_DEPS:$$(RESOLUTION_DIR)/%=%)
-$(1)POM_DEPENDENCIES = $$(foreach dep,$$($(1)pom_gavs),$$(call mk-pom-dep,$$(dep)))
+pom_gavs = $(COMPILE_DEPS:$(RESOLUTION_DIR)/%=%)
+POM_DEPENDENCIES = $(foreach dep,$(pom_gavs),$(call mk-pom-dep,$(dep)))
 
 ## contents
-$(1)POM_CONTENTS = $$(call mk-pom,$(1))
+POM_CONTENTS = $(call mk-pom)
 
 #
 # Targets
 #
 
-.PHONY: $(2)pom
-$(2)pom: $$($(1)POM_FILE)
+.PHONY: pom
+pom: $(POM_FILE)
 
-$$($(1)POM_FILE): Makefile
-	$$(file > $$@,$$($(1)POM_CONTENTS))
-
-endef
+$(POM_FILE): Makefile
+	$(file > $@,$(POM_CONTENTS))
