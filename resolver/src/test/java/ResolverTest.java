@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.testng.annotations.Test;
 
 public class ResolverTest {
@@ -48,6 +49,8 @@ public class ResolverTest {
       args = new String[] {
           "--local-repo",
           repository.toString(),
+          "--remote-repo",
+          "https://repo.maven.apache.org/maven2/",
           "--resolution-dir",
           resolution.toString(),
           dependency
@@ -100,6 +103,8 @@ public class ResolverTest {
       args = new String[] {
           "--local-repo",
           repository.toString(),
+          "--remote-repo",
+          "https://repo.maven.apache.org/maven2/",
           "--resolution-dir",
           resolution.toString(),
           dependency
@@ -129,6 +134,63 @@ public class ResolverTest {
           ${REPO}/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
           ${REPO}/org/testng/testng/7.7.1/testng-7.7.1.jar
           ${REPO}/org/webjars/jquery/3.6.1/jquery-3.6.1.jar
+          """.replace("${REPO}", repository.toString())
+      );
+    } finally {
+      rmdir(root);
+    }
+  }
+
+  @Test
+  public void resolveWay017Snapshot() throws IOException, DependencyResolutionException {
+    Path root;
+    root = Files.createTempDirectory("resolver-test-");
+
+    Path repository;
+    repository = root.resolve("repository");
+
+    Path resolution;
+    resolution = root.resolve("resolution");
+
+    try {
+      Resolver resolver;
+      resolver = new Resolver();
+
+      String dependency;
+      dependency = "br.com.objectos/objectos.way/0.1.7-SNAPSHOT";
+
+      String[] args;
+      args = new String[] {
+          "--local-repo",
+          repository.toString(),
+          "--remote-repo",
+          "https://repo.maven.apache.org/maven2/",
+          "--remote-repo",
+          "https://oss.sonatype.org/content/repositories/snapshots",
+          "--resolution-dir",
+          resolution.toString(),
+          dependency
+      };
+
+      resolver.parseArgs(args);
+
+      assertEquals(resolver.localRepositoryPath, repository);
+      assertEquals(resolver.resolutionPath, resolution);
+      assertEquals(resolver.requestedDependency, dependency);
+
+      resolver.resolve();
+
+      isRegularFile(repository, "br/com/objectos/objectos.way/0.1.7-SNAPSHOT/objectos.way-0.1.7-SNAPSHOT.jar");
+      isRegularFile(repository, "br/com/objectos/objectos.way/0.1.7-SNAPSHOT/objectos.way-0.1.7-SNAPSHOT.pom");
+
+      Path res;
+      res = resolution.resolve(dependency);
+
+      assertEquals(
+          Files.readString(res),
+
+          """
+          ${REPO}/br/com/objectos/objectos.way/0.1.7-SNAPSHOT/objectos.way-0.1.7-SNAPSHOT.jar
           """.replace("${REPO}", repository.toString())
       );
     } finally {
