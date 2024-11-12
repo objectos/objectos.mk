@@ -37,11 +37,22 @@ VSCODE_FILE := pom.xml
 ## path to .mvn directory
 VSCODE_MVNDIR := .mvn
 
-## mvn JVM config file
-VSCODE_JVM_CONFIG := $(VSCODE_MVNDIR)/jvm.config
+## maven local settings file
+VSCODE_LOCAL_SETTINGS := $(VSCODE_MVNDIR)/local-settings.xml
 
-## mvn JVM config contents
-VSCODE_JVM_CONFIG_CONTENTS := -Dmaven.repo.local=$(abspath $(LOCAL_REPO))
+## maven local settings contents
+define VSCODE_LOCAL_SETTINGS_CONTENTS :=
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <localRepository>$(abspath $(LOCAL_REPO))</localRepository>
+</settings>
+endef
+
+## mvn maven config file
+VSCODE_MAVEN_CONFIG := $(VSCODE_MVNDIR)/maven.config
+
+## mvn maven config contents
+VSCODE_MAVEN_CONFIG_CONTENTS := --settings ./$(VSCODE_LOCAL_SETTINGS)
 
 ## assemble the compile deps
 VSCODE_DEPS := $(foreach dep,$(COMPILE_DEPS),$(call mk-vscode-dep,$(dep),compile))
@@ -102,12 +113,17 @@ $(VSCODE_DEPS)	</dependencies>
 </project>
 endef
 
+## all of the requirements
+VSCODE_REQS := $(VSCODE_FILE)
+VSCODE_REQS += $(VSCODE_LOCAL_SETTINGS)
+VSCODE_REQS += $(VSCODE_MAVEN_CONFIG)
+
 .PHONY: vscode
-vscode: $(VSCODE_FILE) $(VSCODE_JVM_CONFIG)
+vscode: $(VSCODE_REQS)
 
 .PHONY: vscode@clean
 vscode@clean:
-	rm -f $(VSCODE_FILE) $(VSCODE_JVM_CONFIG)
+	rm -f $(VSCODE_REQS)
 
 $(VSCODE_FILE): Makefile
 	$(file > $@,$(VSCODE_CONTENTS))
@@ -115,5 +131,8 @@ $(VSCODE_FILE): Makefile
 $(VSCODE_MVNDIR):
 	mkdir $@
 
-$(VSCODE_JVM_CONFIG): | $(VSCODE_MVNDIR)
-	$(file > $@,$(VSCODE_JVM_CONFIG_CONTENTS))
+$(VSCODE_LOCAL_SETTINGS): | $(VSCODE_MVNDIR)
+	$(file > $@,$(VSCODE_LOCAL_SETTINGS_CONTENTS))
+
+$(VSCODE_MAVEN_CONFIG): | $(VSCODE_MVNDIR)
+	$(file > $@,$(VSCODE_MAVEN_CONFIG_CONTENTS))
