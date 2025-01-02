@@ -157,7 +157,7 @@ public class ResolverTest {
       resolver = new Resolver();
 
       String dependency;
-      dependency = "br.com.objectos/objectos.way/0.1.7-SNAPSHOT";
+      dependency = "br.com.objectos/objectos.way/0.1.11-SNAPSHOT";
 
       String[] args;
       args = new String[] {
@@ -180,8 +180,8 @@ public class ResolverTest {
 
       resolver.resolve();
 
-      isRegularFile(repository, "br/com/objectos/objectos.way/0.1.7-SNAPSHOT/objectos.way-0.1.7-SNAPSHOT.jar");
-      isRegularFile(repository, "br/com/objectos/objectos.way/0.1.7-SNAPSHOT/objectos.way-0.1.7-SNAPSHOT.pom");
+      isRegularFile(repository, "br/com/objectos/objectos.way/0.1.11-SNAPSHOT/objectos.way-0.1.11-SNAPSHOT.jar");
+      isRegularFile(repository, "br/com/objectos/objectos.way/0.1.11-SNAPSHOT/objectos.way-0.1.11-SNAPSHOT.pom");
 
       Path res;
       res = resolution.resolve(dependency);
@@ -190,7 +190,7 @@ public class ResolverTest {
           Files.readString(res),
 
           """
-          ${REPO}/br/com/objectos/objectos.way/0.1.7-SNAPSHOT/objectos.way-0.1.7-SNAPSHOT.jar
+          ${REPO}/br/com/objectos/objectos.way/0.1.11-SNAPSHOT/objectos.way-0.1.11-SNAPSHOT.jar
           """.replace("${REPO}", repository.toString())
       );
     } finally {

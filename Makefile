@@ -22,6 +22,26 @@ GROUP_ID := br.com.objectos
 ARTIFACT_ID := objectos.mk
 VERSION := 0.1.1-SNAPSHOT
 
+# Delete the default suffixes
+.SUFFIXES:
+
+#
+# Default target
+#
+
+.PHONY: all
+all: resolver resolver@test
+
+#
+# mk@clean
+#
+
+include common-clean.mk
+
+#
+# mk@resolver
+#
+
 ## resolver dir
 RESOLVER = resolver
 
@@ -31,24 +51,11 @@ RESOLVER_POM = $(RESOLVER)/pom.xml
 ## deps file
 RESOLVER_DEPS = $(RESOLVER)/src/dep-tree
 
-include tools.mk
-
 ## mvn command
-MVNX := $(MVN)
+MVNX := mvn
 MVNX += --file $(RESOLVER_POM)
 
-# Delete the default suffixes
-.SUFFIXES:
-
-#
-# Default target
-#
-
-.PHONY: all
-all: resolver test
-
-.PHONY: clean
-clean:
+resolver@clean:
 	$(MVNX) clean
 
 .PHONY: resolver
@@ -57,6 +64,19 @@ resolver: $(RESOLVER_DEPS)
 $(RESOLVER_DEPS): $(RESOLVER_POM)
 	$(MVNX) test
 
-.PHONY: test
-test:
+.PHONY: resolver@test
+resolver@test:
 	$(MVNX) test
+
+#
+# GH secrets
+#
+
+## - GH_TOKEN
+-include $(HOME)/.config/objectos/gh-config.mk
+
+#
+# mk@gh-release
+#
+
+include gh-release.mk
