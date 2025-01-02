@@ -20,7 +20,7 @@
 
 GROUP_ID := br.com.objectos
 ARTIFACT_ID := objectos.mk
-VERSION := 0.1.1-SNAPSHOT
+VERSION := 0.1.1
 
 # Delete the default suffixes
 .SUFFIXES:
