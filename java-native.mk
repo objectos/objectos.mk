@@ -66,8 +66,14 @@ endif
 ## native module-path
 NATIVE_MODULE_PATH := $(WORK)/native-module-path
 
+## native build args
+# NATIVE_BUILD_ARGS
+
 ## native-image command
 NATIVE_IMAGEX := $(NATIVE_IMAGE)
+ifdef NATIVE_BUILD_ARGS
+NATIVE_IMAGEX += $(NATIVE_BUILD_ARGS)
+endif
 NATIVE_IMAGEX += -o $(NATIVE_OUTPUT_FILE)
 NATIVE_IMAGEX += --module-path @$(NATIVE_MODULE_PATH)
 NATIVE_IMAGEX += --module $(MODULE)/$(NATIVE_MAIN)
